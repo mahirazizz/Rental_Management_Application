@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import prisma from "../config/database";
+import prisma from "../db/index";
 
 const getLeases = async (req: Request, res: Response): Promise<void> => {
   try {

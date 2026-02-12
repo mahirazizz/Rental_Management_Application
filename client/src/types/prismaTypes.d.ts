@@ -51,35 +51,6 @@ export type Payment = $Result.DefaultSelection<Prisma.$PaymentPayload>;
  * Enums
  */
 export namespace $Enums {
-  export const PropertyType: {
-    Rooms: "Rooms";
-    Tinyhouse: "Tinyhouse";
-    Apartment: "Apartment";
-    Villa: "Villa";
-    Townhouse: "Townhouse";
-    Cottage: "Cottage";
-  };
-
-  export type PropertyType = (typeof PropertyType)[keyof typeof PropertyType];
-
-  export const Amenity: {
-    WasherDryer: "WasherDryer";
-    AirConditioning: "AirConditioning";
-    Dishwasher: "Dishwasher";
-    HighSpeedInternet: "HighSpeedInternet";
-    HardwoodFloors: "HardwoodFloors";
-    WalkInClosets: "WalkInClosets";
-    Microwave: "Microwave";
-    Refrigerator: "Refrigerator";
-    Pool: "Pool";
-    Gym: "Gym";
-    Parking: "Parking";
-    PetsAllowed: "PetsAllowed";
-    WiFi: "WiFi";
-  };
-
-  export type Amenity = (typeof Amenity)[keyof typeof Amenity];
-
   export const Highlight: {
     HighSpeedInternetAccess: "HighSpeedInternetAccess";
     WasherDryer: "WasherDryer";
@@ -99,6 +70,35 @@ export namespace $Enums {
   };
 
   export type Highlight = (typeof Highlight)[keyof typeof Highlight];
+
+  export const Amenity: {
+    WasherDryer: "WasherDryer";
+    AirConditioning: "AirConditioning";
+    Dishwasher: "Dishwasher";
+    HighSpeedInternet: "HighSpeedInternet";
+    HardwoodFloors: "HardwoodFloors";
+    WalkInClosets: "WalkInClosets";
+    Microwave: "Microwave";
+    Refrigerator: "Refrigerator";
+    Pool: "Pool";
+    Gym: "Gym";
+    Parking: "Parking";
+    PetsAllowed: "PetsAllowed";
+    WiFi: "WiFi";
+  };
+
+  export type Amenity = (typeof Amenity)[keyof typeof Amenity];
+
+  export const PropertyType: {
+    Rooms: "Rooms";
+    Tinyhouse: "Tinyhouse";
+    Apartment: "Apartment";
+    Villa: "Villa";
+    Townhouse: "Townhouse";
+    Cottage: "Cottage";
+  };
+
+  export type PropertyType = (typeof PropertyType)[keyof typeof PropertyType];
 
   export const ApplicationStatus: {
     Pending: "Pending";
@@ -120,17 +120,17 @@ export namespace $Enums {
     (typeof PaymentStatus)[keyof typeof PaymentStatus];
 }
 
-export type PropertyType = $Enums.PropertyType;
+export type Highlight = $Enums.Highlight;
 
-export const PropertyType: typeof $Enums.PropertyType;
+export const Highlight: typeof $Enums.Highlight;
 
 export type Amenity = $Enums.Amenity;
 
 export const Amenity: typeof $Enums.Amenity;
 
-export type Highlight = $Enums.Highlight;
+export type PropertyType = $Enums.PropertyType;
 
-export const Highlight: typeof $Enums.Highlight;
+export const PropertyType: typeof $Enums.PropertyType;
 
 export type ApplicationStatus = $Enums.ApplicationStatus;
 
@@ -161,7 +161,7 @@ export class PrismaClient<
       ? Prisma.GetEvents<ClientOptions["log"]>
       : never
     : never,
-  ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+  ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
 > {
   [K: symbol]: { types: Prisma.TypeMap<ExtArgs>["other"] };
 
@@ -181,13 +181,13 @@ export class PrismaClient<
    */
 
   constructor(
-    optionsArg?: Prisma.Subset<ClientOptions, Prisma.PrismaClientOptions>
+    optionsArg?: Prisma.Subset<ClientOptions, Prisma.PrismaClientOptions>,
   );
   $on<V extends U>(
     eventType: V,
     callback: (
-      event: V extends "query" ? Prisma.QueryEvent : Prisma.LogEvent
-    ) => void
+      event: V extends "query" ? Prisma.QueryEvent : Prisma.LogEvent,
+    ) => void,
   ): void;
 
   /**
@@ -280,21 +280,32 @@ export class PrismaClient<
    */
   $transaction<P extends Prisma.PrismaPromise<any>[]>(
     arg: [...P],
-    options?: { isolationLevel?: Prisma.TransactionIsolationLevel }
+    options?: { isolationLevel?: Prisma.TransactionIsolationLevel },
   ): $Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>;
 
   $transaction<R>(
     fn: (
-      prisma: Omit<PrismaClient, runtime.ITXClientDenyList>
+      prisma: Omit<PrismaClient, runtime.ITXClientDenyList>,
     ) => $Utils.JsPromise<R>,
     options?: {
       maxWait?: number;
       timeout?: number;
       isolationLevel?: Prisma.TransactionIsolationLevel;
-    }
+    },
   ): $Utils.JsPromise<R>;
 
-  $extends: $Extensions.ExtendsHook<"extends", Prisma.TypeMapCb, ExtArgs>;
+  $extends: $Extensions.ExtendsHook<
+    "extends",
+    Prisma.TypeMapCb,
+    ExtArgs,
+    $Utils.Call<
+      Prisma.TypeMapCb,
+      {
+        extArgs: ExtArgs;
+      }
+    >,
+    ClientOptions
+  >;
 
   /**
    * `prisma.property`: Exposes CRUD operations for the **Property** model.
@@ -304,7 +315,7 @@ export class PrismaClient<
    * const properties = await prisma.property.findMany()
    * ```
    */
-  get property(): Prisma.PropertyDelegate<ExtArgs>;
+  get property(): Prisma.PropertyDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.manager`: Exposes CRUD operations for the **Manager** model.
@@ -314,7 +325,7 @@ export class PrismaClient<
    * const managers = await prisma.manager.findMany()
    * ```
    */
-  get manager(): Prisma.ManagerDelegate<ExtArgs>;
+  get manager(): Prisma.ManagerDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.tenant`: Exposes CRUD operations for the **Tenant** model.
@@ -324,7 +335,7 @@ export class PrismaClient<
    * const tenants = await prisma.tenant.findMany()
    * ```
    */
-  get tenant(): Prisma.TenantDelegate<ExtArgs>;
+  get tenant(): Prisma.TenantDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.location`: Exposes CRUD operations for the **Location** model.
@@ -334,7 +345,7 @@ export class PrismaClient<
    * const locations = await prisma.location.findMany()
    * ```
    */
-  get location(): Prisma.LocationDelegate<ExtArgs>;
+  get location(): Prisma.LocationDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.application`: Exposes CRUD operations for the **Application** model.
@@ -344,7 +355,7 @@ export class PrismaClient<
    * const applications = await prisma.application.findMany()
    * ```
    */
-  get application(): Prisma.ApplicationDelegate<ExtArgs>;
+  get application(): Prisma.ApplicationDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.lease`: Exposes CRUD operations for the **Lease** model.
@@ -354,7 +365,7 @@ export class PrismaClient<
    * const leases = await prisma.lease.findMany()
    * ```
    */
-  get lease(): Prisma.LeaseDelegate<ExtArgs>;
+  get lease(): Prisma.LeaseDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.payment`: Exposes CRUD operations for the **Payment** model.
@@ -364,7 +375,7 @@ export class PrismaClient<
    * const payments = await prisma.payment.findMany()
    * ```
    */
-  get payment(): Prisma.PaymentDelegate<ExtArgs>;
+  get payment(): Prisma.PaymentDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -385,7 +396,6 @@ export namespace Prisma {
   export import PrismaClientRustPanicError = runtime.PrismaClientRustPanicError;
   export import PrismaClientInitializationError = runtime.PrismaClientInitializationError;
   export import PrismaClientValidationError = runtime.PrismaClientValidationError;
-  export import NotFoundError = runtime.NotFoundError;
 
   /**
    * Re-export of sql-template-tag
@@ -422,8 +432,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact;
 
   /**
-   * Prisma Client JS version: 5.22.0
-   * Query Engine version: 605197351a3c8bdd595af2d2a9bc3025bca48ea2
+   * Prisma Client JS version: 6.3.0
+   * Query Engine version: acc0b9dd43eb689cbd20c9470515d719db10d0b0
    */
   export type PrismaVersion = {
     client: string;
@@ -519,17 +529,14 @@ export namespace Prisma {
   /**
    * Get the type of the value, that the Promise holds.
    */
-  export type PromiseType<T extends PromiseLike<any>> = T extends PromiseLike<
-    infer U
-  >
-    ? U
-    : T;
+  export type PromiseType<T extends PromiseLike<any>> =
+    T extends PromiseLike<infer U> ? U : T;
 
   /**
    * Get the return type of a function which returns a Promise.
    */
   export type PromiseReturnType<
-    T extends (...args: any) => $Utils.JsPromise<any>
+    T extends (...args: any) => $Utils.JsPromise<any>,
   > = PromiseType<ReturnType<T>>;
 
   /**
@@ -569,8 +576,8 @@ export namespace Prisma {
   } & (T extends SelectAndInclude
     ? "Please either choose `select` or `include`."
     : T extends SelectAndOmit
-    ? "Please either choose `select` or `omit`."
-    : {});
+      ? "Please either choose `select` or `omit`."
+      : {});
 
   /**
    * Subset + Intersection
@@ -595,17 +602,18 @@ export namespace Prisma {
   /**
    * Is T a Record?
    */
-  type IsObject<T extends any> = T extends Array<any>
-    ? False
-    : T extends Date
-    ? False
-    : T extends Uint8Array
-    ? False
-    : T extends BigInt
-    ? False
-    : T extends object
-    ? True
-    : False;
+  type IsObject<T extends any> =
+    T extends Array<any>
+      ? False
+      : T extends Date
+        ? False
+        : T extends Uint8Array
+          ? False
+          : T extends BigInt
+            ? False
+            : T extends object
+              ? True
+              : False;
 
   /**
    * If it's T[], return T
@@ -636,7 +644,7 @@ export namespace Prisma {
   type Either<
     O extends object,
     K extends Key,
-    strict extends Boolean = 1
+    strict extends Boolean = 1,
   > = O extends unknown ? _Either<O, K, strict> : never;
 
   export type Union = any;
@@ -676,7 +684,7 @@ export namespace Prisma {
   export type At<
     O extends object,
     K extends Key,
-    strict extends Boolean = 1
+    strict extends Boolean = 1,
   > = {
     1: AtStrict<O, K>;
     0: AtLoose<O, K>;
@@ -740,8 +748,8 @@ export namespace Prisma {
   export type Extends<A1 extends any, A2 extends any> = [A1] extends [never]
     ? 0 // anything `never` is false
     : A1 extends A2
-    ? 1
-    : 0;
+      ? 1
+      : 0;
 
   export type Has<U extends Union, U1 extends Union> = Not<
     Extends<Exclude<U1, U>, U1>
@@ -776,7 +784,7 @@ export namespace Prisma {
 
   type FieldPaths<
     T,
-    U = Omit<T, "_avg" | "_sum" | "_count" | "_min" | "_max">
+    U = Omit<T, "_avg" | "_sum" | "_count" | "_min" | "_max">,
   > = IsObject<T> extends True ? U : T;
 
   type GetHavingFields<T> = {
@@ -793,8 +801,8 @@ export namespace Prisma {
           >
         : never
       : {} extends FieldPaths<T[K]>
-      ? never
-      : K;
+        ? never
+        : K;
   }[keyof T];
 
   /**
@@ -809,7 +817,7 @@ export namespace Prisma {
    */
   type PickEnumerable<
     T,
-    K extends Enumerable<keyof T> | keyof T
+    K extends Enumerable<keyof T> | keyof T,
   > = Prisma__Pick<T, MaybeTupleToUnion<K>>;
 
   /**
@@ -841,11 +849,10 @@ export namespace Prisma {
     db?: Datasource;
   };
 
-  interface TypeMapCb
-    extends $Utils.Fn<
-      { extArgs: $Extensions.InternalArgs; clientOptions: PrismaClientOptions },
-      $Utils.Record<string, any>
-    > {
+  interface TypeMapCb extends $Utils.Fn<
+    { extArgs: $Extensions.InternalArgs; clientOptions: PrismaClientOptions },
+    $Utils.Record<string, any>
+  > {
     returns: Prisma.TypeMap<
       this["params"]["extArgs"],
       this["params"]["clientOptions"]
@@ -854,7 +861,7 @@ export namespace Prisma {
 
   export type TypeMap<
     ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
-    ClientOptions = {}
+    ClientOptions = {},
   > = {
     meta: {
       modelProps:
@@ -919,6 +926,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.PropertyUpdateManyArgs<ExtArgs>;
             result: BatchPayload;
+          };
+          updateManyAndReturn: {
+            args: Prisma.PropertyUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PropertyPayload>[];
           };
           upsert: {
             args: Prisma.PropertyUpsertArgs<ExtArgs>;
@@ -990,6 +1001,10 @@ export namespace Prisma {
             args: Prisma.ManagerUpdateManyArgs<ExtArgs>;
             result: BatchPayload;
           };
+          updateManyAndReturn: {
+            args: Prisma.ManagerUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ManagerPayload>[];
+          };
           upsert: {
             args: Prisma.ManagerUpsertArgs<ExtArgs>;
             result: $Utils.PayloadToResult<Prisma.$ManagerPayload>;
@@ -1060,6 +1075,10 @@ export namespace Prisma {
             args: Prisma.TenantUpdateManyArgs<ExtArgs>;
             result: BatchPayload;
           };
+          updateManyAndReturn: {
+            args: Prisma.TenantUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$TenantPayload>[];
+          };
           upsert: {
             args: Prisma.TenantUpsertArgs<ExtArgs>;
             result: $Utils.PayloadToResult<Prisma.$TenantPayload>;
@@ -1117,6 +1136,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.LocationUpdateManyArgs<ExtArgs>;
             result: BatchPayload;
+          };
+          updateManyAndReturn: {
+            args: Prisma.LocationUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$LocationPayload>[];
           };
           aggregate: {
             args: Prisma.LocationAggregateArgs<ExtArgs>;
@@ -1183,6 +1206,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.ApplicationUpdateManyArgs<ExtArgs>;
             result: BatchPayload;
+          };
+          updateManyAndReturn: {
+            args: Prisma.ApplicationUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$ApplicationPayload>[];
           };
           upsert: {
             args: Prisma.ApplicationUpsertArgs<ExtArgs>;
@@ -1256,6 +1283,10 @@ export namespace Prisma {
             args: Prisma.LeaseUpdateManyArgs<ExtArgs>;
             result: BatchPayload;
           };
+          updateManyAndReturn: {
+            args: Prisma.LeaseUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$LeasePayload>[];
+          };
           upsert: {
             args: Prisma.LeaseUpsertArgs<ExtArgs>;
             result: $Utils.PayloadToResult<Prisma.$LeasePayload>;
@@ -1325,6 +1356,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.PaymentUpdateManyArgs<ExtArgs>;
             result: BatchPayload;
+          };
+          updateManyAndReturn: {
+            args: Prisma.PaymentUpdateManyAndReturnArgs<ExtArgs>;
+            result: $Utils.PayloadToResult<Prisma.$PaymentPayload>[];
           };
           upsert: {
             args: Prisma.PaymentUpsertArgs<ExtArgs>;
@@ -1415,7 +1450,31 @@ export namespace Prisma {
       timeout?: number;
       isolationLevel?: Prisma.TransactionIsolationLevel;
     };
+    /**
+     * Global configuration for omitting model fields by default.
+     *
+     * @example
+     * ```
+     * const prisma = new PrismaClient({
+     *   omit: {
+     *     user: {
+     *       password: true
+     *     }
+     *   }
+     * })
+     * ```
+     */
+    omit?: Prisma.GlobalOmitConfig;
   }
+  export type GlobalOmitConfig = {
+    property?: PropertyOmit;
+    manager?: ManagerOmit;
+    tenant?: TenantOmit;
+    location?: LocationOmit;
+    application?: ApplicationOmit;
+    lease?: LeaseOmit;
+    payment?: PaymentOmit;
+  };
 
   /* Types for Logging */
   export type LogLevel = "info" | "query" | "warn" | "error";
@@ -1430,11 +1489,14 @@ export namespace Prisma {
         ? T["level"]
         : never
       : never;
-  export type GetEvents<T extends any> = T extends Array<
-    LogLevel | LogDefinition
-  >
-    ? GetLogType<T[0]> | GetLogType<T[1]> | GetLogType<T[2]> | GetLogType<T[3]>
-    : never;
+  export type GetEvents<T extends any> =
+    T extends Array<LogLevel | LogDefinition>
+      ?
+          | GetLogType<T[0]>
+          | GetLogType<T[1]>
+          | GetLogType<T[2]>
+          | GetLogType<T[3]>
+      : never;
 
   export type QueryEvent = {
     timestamp: Date;
@@ -1462,6 +1524,7 @@ export namespace Prisma {
     | "createManyAndReturn"
     | "update"
     | "updateMany"
+    | "updateManyAndReturn"
     | "upsert"
     | "delete"
     | "deleteMany"
@@ -1489,12 +1552,12 @@ export namespace Prisma {
    */
   export type Middleware<T = any> = (
     params: MiddlewareParams,
-    next: (params: MiddlewareParams) => $Utils.JsPromise<T>
+    next: (params: MiddlewareParams) => $Utils.JsPromise<T>,
   ) => $Utils.JsPromise<T>;
 
   // tested in getLogLevel.test.ts
   export function getLogLevel(
-    log: Array<LogLevel | LogDefinition>
+    log: Array<LogLevel | LogDefinition>,
   ): LogLevel | undefined;
 
   /**
@@ -1525,7 +1588,7 @@ export namespace Prisma {
   };
 
   export type PropertyCountOutputTypeSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     leases?: boolean | PropertyCountOutputTypeCountLeasesArgs;
     applications?: boolean | PropertyCountOutputTypeCountApplicationsArgs;
@@ -1538,7 +1601,7 @@ export namespace Prisma {
    * PropertyCountOutputType without action
    */
   export type PropertyCountOutputTypeDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the PropertyCountOutputType
@@ -1550,7 +1613,7 @@ export namespace Prisma {
    * PropertyCountOutputType without action
    */
   export type PropertyCountOutputTypeCountLeasesArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: LeaseWhereInput;
   };
@@ -1559,7 +1622,7 @@ export namespace Prisma {
    * PropertyCountOutputType without action
    */
   export type PropertyCountOutputTypeCountApplicationsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: ApplicationWhereInput;
   };
@@ -1568,7 +1631,7 @@ export namespace Prisma {
    * PropertyCountOutputType without action
    */
   export type PropertyCountOutputTypeCountFavoritedByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: TenantWhereInput;
   };
@@ -1577,7 +1640,7 @@ export namespace Prisma {
    * PropertyCountOutputType without action
    */
   export type PropertyCountOutputTypeCountTenantsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: TenantWhereInput;
   };
@@ -1591,7 +1654,7 @@ export namespace Prisma {
   };
 
   export type ManagerCountOutputTypeSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     managedProperties?:
       | boolean
@@ -1603,7 +1666,7 @@ export namespace Prisma {
    * ManagerCountOutputType without action
    */
   export type ManagerCountOutputTypeDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the ManagerCountOutputType
@@ -1615,7 +1678,7 @@ export namespace Prisma {
    * ManagerCountOutputType without action
    */
   export type ManagerCountOutputTypeCountManagedPropertiesArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: PropertyWhereInput;
   };
@@ -1632,7 +1695,7 @@ export namespace Prisma {
   };
 
   export type TenantCountOutputTypeSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     properties?: boolean | TenantCountOutputTypeCountPropertiesArgs;
     favorites?: boolean | TenantCountOutputTypeCountFavoritesArgs;
@@ -1645,7 +1708,7 @@ export namespace Prisma {
    * TenantCountOutputType without action
    */
   export type TenantCountOutputTypeDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the TenantCountOutputType
@@ -1657,7 +1720,7 @@ export namespace Prisma {
    * TenantCountOutputType without action
    */
   export type TenantCountOutputTypeCountPropertiesArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: PropertyWhereInput;
   };
@@ -1666,7 +1729,7 @@ export namespace Prisma {
    * TenantCountOutputType without action
    */
   export type TenantCountOutputTypeCountFavoritesArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: PropertyWhereInput;
   };
@@ -1675,7 +1738,7 @@ export namespace Prisma {
    * TenantCountOutputType without action
    */
   export type TenantCountOutputTypeCountApplicationsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: ApplicationWhereInput;
   };
@@ -1684,7 +1747,7 @@ export namespace Prisma {
    * TenantCountOutputType without action
    */
   export type TenantCountOutputTypeCountLeasesArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: LeaseWhereInput;
   };
@@ -1698,7 +1761,7 @@ export namespace Prisma {
   };
 
   export type LocationCountOutputTypeSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     properties?: boolean | LocationCountOutputTypeCountPropertiesArgs;
   };
@@ -1708,7 +1771,7 @@ export namespace Prisma {
    * LocationCountOutputType without action
    */
   export type LocationCountOutputTypeDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the LocationCountOutputType
@@ -1720,7 +1783,7 @@ export namespace Prisma {
    * LocationCountOutputType without action
    */
   export type LocationCountOutputTypeCountPropertiesArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: PropertyWhereInput;
   };
@@ -1734,7 +1797,7 @@ export namespace Prisma {
   };
 
   export type LeaseCountOutputTypeSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     payments?: boolean | LeaseCountOutputTypeCountPaymentsArgs;
   };
@@ -1744,7 +1807,7 @@ export namespace Prisma {
    * LeaseCountOutputType without action
    */
   export type LeaseCountOutputTypeDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the LeaseCountOutputType
@@ -1756,7 +1819,7 @@ export namespace Prisma {
    * LeaseCountOutputType without action
    */
   export type LeaseCountOutputTypeCountPaymentsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: PaymentWhereInput;
   };
@@ -1958,7 +2021,7 @@ export namespace Prisma {
   };
 
   export type PropertyAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Filter which Property to aggregate.
@@ -2031,7 +2094,7 @@ export namespace Prisma {
   };
 
   export type PropertyGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: PropertyWhereInput;
     orderBy?:
@@ -2090,7 +2153,7 @@ export namespace Prisma {
     >;
 
   export type PropertySelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = $Extensions.GetSelect<
     {
       id?: boolean;
@@ -2125,7 +2188,37 @@ export namespace Prisma {
   >;
 
   export type PropertySelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      name?: boolean;
+      description?: boolean;
+      pricePerMonth?: boolean;
+      securityDeposit?: boolean;
+      applicationFee?: boolean;
+      photoUrls?: boolean;
+      amenities?: boolean;
+      highlights?: boolean;
+      isPetsAllowed?: boolean;
+      isParkingIncluded?: boolean;
+      beds?: boolean;
+      baths?: boolean;
+      squareFeet?: boolean;
+      propertyType?: boolean;
+      postedDate?: boolean;
+      averageRating?: boolean;
+      numberOfReviews?: boolean;
+      locationId?: boolean;
+      managerCognitoId?: boolean;
+      location?: boolean | LocationDefaultArgs<ExtArgs>;
+      manager?: boolean | ManagerDefaultArgs<ExtArgs>;
+    },
+    ExtArgs["result"]["property"]
+  >;
+
+  export type PropertySelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = $Extensions.GetSelect<
     {
       id?: boolean;
@@ -2177,8 +2270,33 @@ export namespace Prisma {
     managerCognitoId?: boolean;
   };
 
+  export type PropertyOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetOmit<
+    | "id"
+    | "name"
+    | "description"
+    | "pricePerMonth"
+    | "securityDeposit"
+    | "applicationFee"
+    | "photoUrls"
+    | "amenities"
+    | "highlights"
+    | "isPetsAllowed"
+    | "isParkingIncluded"
+    | "beds"
+    | "baths"
+    | "squareFeet"
+    | "propertyType"
+    | "postedDate"
+    | "averageRating"
+    | "numberOfReviews"
+    | "locationId"
+    | "managerCognitoId",
+    ExtArgs["result"]["property"]
+  >;
   export type PropertyInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     location?: boolean | LocationDefaultArgs<ExtArgs>;
     manager?: boolean | ManagerDefaultArgs<ExtArgs>;
@@ -2189,14 +2307,20 @@ export namespace Prisma {
     _count?: boolean | PropertyCountOutputTypeDefaultArgs<ExtArgs>;
   };
   export type PropertyIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    location?: boolean | LocationDefaultArgs<ExtArgs>;
+    manager?: boolean | ManagerDefaultArgs<ExtArgs>;
+  };
+  export type PropertyIncludeUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     location?: boolean | LocationDefaultArgs<ExtArgs>;
     manager?: boolean | ManagerDefaultArgs<ExtArgs>;
   };
 
   export type $PropertyPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     name: "Property";
     objects: {
@@ -2236,17 +2360,18 @@ export namespace Prisma {
   };
 
   type PropertyGetPayload<
-    S extends boolean | null | undefined | PropertyDefaultArgs
+    S extends boolean | null | undefined | PropertyDefaultArgs,
   > = $Result.GetResult<Prisma.$PropertyPayload, S>;
 
   type PropertyCountArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = Omit<PropertyFindManyArgs, "select" | "include" | "distinct"> & {
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = Omit<PropertyFindManyArgs, "select" | "include" | "distinct" | "omit"> & {
     select?: PropertyCountAggregateInputType | true;
   };
 
   export interface PropertyDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    ClientOptions = {},
   > {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>["model"]["Property"];
@@ -2264,15 +2389,17 @@ export namespace Prisma {
      * })
      */
     findUnique<T extends PropertyFindUniqueArgs>(
-      args: SelectSubset<T, PropertyFindUniqueArgs<ExtArgs>>
+      args: SelectSubset<T, PropertyFindUniqueArgs<ExtArgs>>,
     ): Prisma__PropertyClient<
       $Result.GetResult<
         Prisma.$PropertyPayload<ExtArgs>,
         T,
-        "findUnique"
+        "findUnique",
+        ClientOptions
       > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -2288,15 +2415,17 @@ export namespace Prisma {
      * })
      */
     findUniqueOrThrow<T extends PropertyFindUniqueOrThrowArgs>(
-      args: SelectSubset<T, PropertyFindUniqueOrThrowArgs<ExtArgs>>
+      args: SelectSubset<T, PropertyFindUniqueOrThrowArgs<ExtArgs>>,
     ): Prisma__PropertyClient<
       $Result.GetResult<
         Prisma.$PropertyPayload<ExtArgs>,
         T,
-        "findUniqueOrThrow"
+        "findUniqueOrThrow",
+        ClientOptions
       >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -2313,15 +2442,17 @@ export namespace Prisma {
      * })
      */
     findFirst<T extends PropertyFindFirstArgs>(
-      args?: SelectSubset<T, PropertyFindFirstArgs<ExtArgs>>
+      args?: SelectSubset<T, PropertyFindFirstArgs<ExtArgs>>,
     ): Prisma__PropertyClient<
       $Result.GetResult<
         Prisma.$PropertyPayload<ExtArgs>,
         T,
-        "findFirst"
+        "findFirst",
+        ClientOptions
       > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -2339,15 +2470,17 @@ export namespace Prisma {
      * })
      */
     findFirstOrThrow<T extends PropertyFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, PropertyFindFirstOrThrowArgs<ExtArgs>>
+      args?: SelectSubset<T, PropertyFindFirstOrThrowArgs<ExtArgs>>,
     ): Prisma__PropertyClient<
       $Result.GetResult<
         Prisma.$PropertyPayload<ExtArgs>,
         T,
-        "findFirstOrThrow"
+        "findFirstOrThrow",
+        ClientOptions
       >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -2367,9 +2500,14 @@ export namespace Prisma {
      *
      */
     findMany<T extends PropertyFindManyArgs>(
-      args?: SelectSubset<T, PropertyFindManyArgs<ExtArgs>>
+      args?: SelectSubset<T, PropertyFindManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findMany">
+      $Result.GetResult<
+        Prisma.$PropertyPayload<ExtArgs>,
+        T,
+        "findMany",
+        ClientOptions
+      >
     >;
 
     /**
@@ -2385,11 +2523,17 @@ export namespace Prisma {
      *
      */
     create<T extends PropertyCreateArgs>(
-      args: SelectSubset<T, PropertyCreateArgs<ExtArgs>>
+      args: SelectSubset<T, PropertyCreateArgs<ExtArgs>>,
     ): Prisma__PropertyClient<
-      $Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "create">,
+      $Result.GetResult<
+        Prisma.$PropertyPayload<ExtArgs>,
+        T,
+        "create",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -2405,7 +2549,7 @@ export namespace Prisma {
      *
      */
     createMany<T extends PropertyCreateManyArgs>(
-      args?: SelectSubset<T, PropertyCreateManyArgs<ExtArgs>>
+      args?: SelectSubset<T, PropertyCreateManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
 
     /**
@@ -2431,12 +2575,13 @@ export namespace Prisma {
      *
      */
     createManyAndReturn<T extends PropertyCreateManyAndReturnArgs>(
-      args?: SelectSubset<T, PropertyCreateManyAndReturnArgs<ExtArgs>>
+      args?: SelectSubset<T, PropertyCreateManyAndReturnArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
       $Result.GetResult<
         Prisma.$PropertyPayload<ExtArgs>,
         T,
-        "createManyAndReturn"
+        "createManyAndReturn",
+        ClientOptions
       >
     >;
 
@@ -2453,11 +2598,17 @@ export namespace Prisma {
      *
      */
     delete<T extends PropertyDeleteArgs>(
-      args: SelectSubset<T, PropertyDeleteArgs<ExtArgs>>
+      args: SelectSubset<T, PropertyDeleteArgs<ExtArgs>>,
     ): Prisma__PropertyClient<
-      $Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "delete">,
+      $Result.GetResult<
+        Prisma.$PropertyPayload<ExtArgs>,
+        T,
+        "delete",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -2476,11 +2627,17 @@ export namespace Prisma {
      *
      */
     update<T extends PropertyUpdateArgs>(
-      args: SelectSubset<T, PropertyUpdateArgs<ExtArgs>>
+      args: SelectSubset<T, PropertyUpdateArgs<ExtArgs>>,
     ): Prisma__PropertyClient<
-      $Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "update">,
+      $Result.GetResult<
+        Prisma.$PropertyPayload<ExtArgs>,
+        T,
+        "update",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -2496,7 +2653,7 @@ export namespace Prisma {
      *
      */
     deleteMany<T extends PropertyDeleteManyArgs>(
-      args?: SelectSubset<T, PropertyDeleteManyArgs<ExtArgs>>
+      args?: SelectSubset<T, PropertyDeleteManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
 
     /**
@@ -2517,8 +2674,47 @@ export namespace Prisma {
      *
      */
     updateMany<T extends PropertyUpdateManyArgs>(
-      args: SelectSubset<T, PropertyUpdateManyArgs<ExtArgs>>
+      args: SelectSubset<T, PropertyUpdateManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more Properties and returns the data updated in the database.
+     * @param {PropertyUpdateManyAndReturnArgs} args - Arguments to update many Properties.
+     * @example
+     * // Update many Properties
+     * const property = await prisma.property.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more Properties and only return the `id`
+     * const propertyWithIdOnly = await prisma.property.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends PropertyUpdateManyAndReturnArgs>(
+      args: SelectSubset<T, PropertyUpdateManyAndReturnArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$PropertyPayload<ExtArgs>,
+        T,
+        "updateManyAndReturn",
+        ClientOptions
+      >
+    >;
 
     /**
      * Create or update one Property.
@@ -2538,11 +2734,17 @@ export namespace Prisma {
      * })
      */
     upsert<T extends PropertyUpsertArgs>(
-      args: SelectSubset<T, PropertyUpsertArgs<ExtArgs>>
+      args: SelectSubset<T, PropertyUpsertArgs<ExtArgs>>,
     ): Prisma__PropertyClient<
-      $Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "upsert">,
+      $Result.GetResult<
+        Prisma.$PropertyPayload<ExtArgs>,
+        T,
+        "upsert",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -2559,7 +2761,7 @@ export namespace Prisma {
      * })
      **/
     count<T extends PropertyCountArgs>(
-      args?: Subset<T, PropertyCountArgs>
+      args?: Subset<T, PropertyCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<"select", any>
         ? T["select"] extends true
@@ -2593,7 +2795,7 @@ export namespace Prisma {
      * })
      **/
     aggregate<T extends PropertyAggregateArgs>(
-      args: Subset<T, PropertyAggregateArgs>
+      args: Subset<T, PropertyAggregateArgs>,
     ): Prisma.PrismaPromise<GetPropertyAggregateType<T>>;
 
     /**
@@ -2634,47 +2836,48 @@ export namespace Prisma {
       InputErrors extends ByEmpty extends True
         ? `Error: "by" must not be empty.`
         : HavingValid extends False
-        ? {
-            [P in HavingFields]: P extends ByFields
-              ? never
-              : P extends string
-              ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-              : [
-                  Error,
-                  "Field ",
-                  P,
-                  ` in "having" needs to be provided in "by"`
-                ];
-          }[HavingFields]
-        : "take" extends Keys<T>
-        ? "orderBy" extends Keys<T>
-          ? ByValid extends True
-            ? {}
-            : {
-                [P in OrderFields]: P extends ByFields
-                  ? never
-                  : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-              }[OrderFields]
-          : 'Error: If you provide "take", you also need to provide "orderBy"'
-        : "skip" extends Keys<T>
-        ? "orderBy" extends Keys<T>
-          ? ByValid extends True
-            ? {}
-            : {
-                [P in OrderFields]: P extends ByFields
-                  ? never
-                  : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-              }[OrderFields]
-          : 'Error: If you provide "skip", you also need to provide "orderBy"'
-        : ByValid extends True
-        ? {}
-        : {
-            [P in OrderFields]: P extends ByFields
-              ? never
-              : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-          }[OrderFields]
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [
+                      Error,
+                      "Field ",
+                      P,
+                      ` in "having" needs to be provided in "by"`,
+                    ];
+            }[HavingFields]
+          : "take" extends Keys<T>
+            ? "orderBy" extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : "skip" extends Keys<T>
+              ? "orderBy" extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields],
     >(
-      args: SubsetIntersection<T, PropertyGroupByArgs, OrderByArg> & InputErrors
+      args: SubsetIntersection<T, PropertyGroupByArgs, OrderByArg> &
+        InputErrors,
     ): {} extends InputErrors
       ? GetPropertyGroupByPayload<T>
       : Prisma.PrismaPromise<InputErrors>;
@@ -2693,53 +2896,81 @@ export namespace Prisma {
   export interface Prisma__PropertyClient<
     T,
     Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    ClientOptions = {},
   > extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise";
     location<T extends LocationDefaultArgs<ExtArgs> = {}>(
-      args?: Subset<T, LocationDefaultArgs<ExtArgs>>
+      args?: Subset<T, LocationDefaultArgs<ExtArgs>>,
     ): Prisma__LocationClient<
       | $Result.GetResult<
           Prisma.$LocationPayload<ExtArgs>,
           T,
-          "findUniqueOrThrow"
+          "findUniqueOrThrow",
+          ClientOptions
         >
       | Null,
       Null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
     manager<T extends ManagerDefaultArgs<ExtArgs> = {}>(
-      args?: Subset<T, ManagerDefaultArgs<ExtArgs>>
+      args?: Subset<T, ManagerDefaultArgs<ExtArgs>>,
     ): Prisma__ManagerClient<
       | $Result.GetResult<
           Prisma.$ManagerPayload<ExtArgs>,
           T,
-          "findUniqueOrThrow"
+          "findUniqueOrThrow",
+          ClientOptions
         >
       | Null,
       Null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
     leases<T extends Property$leasesArgs<ExtArgs> = {}>(
-      args?: Subset<T, Property$leasesArgs<ExtArgs>>
+      args?: Subset<T, Property$leasesArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "findMany"> | Null
+      | $Result.GetResult<
+          Prisma.$LeasePayload<ExtArgs>,
+          T,
+          "findMany",
+          ClientOptions
+        >
+      | Null
     >;
     applications<T extends Property$applicationsArgs<ExtArgs> = {}>(
-      args?: Subset<T, Property$applicationsArgs<ExtArgs>>
+      args?: Subset<T, Property$applicationsArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      | $Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findMany">
+      | $Result.GetResult<
+          Prisma.$ApplicationPayload<ExtArgs>,
+          T,
+          "findMany",
+          ClientOptions
+        >
       | Null
     >;
     favoritedBy<T extends Property$favoritedByArgs<ExtArgs> = {}>(
-      args?: Subset<T, Property$favoritedByArgs<ExtArgs>>
+      args?: Subset<T, Property$favoritedByArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findMany"> | Null
+      | $Result.GetResult<
+          Prisma.$TenantPayload<ExtArgs>,
+          T,
+          "findMany",
+          ClientOptions
+        >
+      | Null
     >;
     tenants<T extends Property$tenantsArgs<ExtArgs> = {}>(
-      args?: Subset<T, Property$tenantsArgs<ExtArgs>>
+      args?: Subset<T, Property$tenantsArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findMany"> | Null
+      | $Result.GetResult<
+          Prisma.$TenantPayload<ExtArgs>,
+          T,
+          "findMany",
+          ClientOptions
+        >
+      | Null
     >;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2755,7 +2986,7 @@ export namespace Prisma {
       onrejected?:
         | ((reason: any) => TResult2 | PromiseLike<TResult2>)
         | undefined
-        | null
+        | null,
     ): $Utils.JsPromise<TResult1 | TResult2>;
     /**
      * Attaches a callback for only the rejection of the Promise.
@@ -2766,7 +2997,7 @@ export namespace Prisma {
       onrejected?:
         | ((reason: any) => TResult | PromiseLike<TResult>)
         | undefined
-        | null
+        | null,
     ): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
@@ -2808,12 +3039,16 @@ export namespace Prisma {
    * Property findUnique
    */
   export type PropertyFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Property
      */
     select?: PropertySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -2828,12 +3063,16 @@ export namespace Prisma {
    * Property findUniqueOrThrow
    */
   export type PropertyFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Property
      */
     select?: PropertySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -2848,12 +3087,16 @@ export namespace Prisma {
    * Property findFirst
    */
   export type PropertyFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Property
      */
     select?: PropertySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -2900,12 +3143,16 @@ export namespace Prisma {
    * Property findFirstOrThrow
    */
   export type PropertyFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Property
      */
     select?: PropertySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -2952,12 +3199,16 @@ export namespace Prisma {
    * Property findMany
    */
   export type PropertyFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Property
      */
     select?: PropertySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -2999,12 +3250,16 @@ export namespace Prisma {
    * Property create
    */
   export type PropertyCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Property
      */
     select?: PropertySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -3019,7 +3274,7 @@ export namespace Prisma {
    * Property createMany
    */
   export type PropertyCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * The data used to create many Properties.
@@ -3032,12 +3287,16 @@ export namespace Prisma {
    * Property createManyAndReturn
    */
   export type PropertyCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Property
      */
     select?: PropertySelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
     /**
      * The data used to create many Properties.
      */
@@ -3053,12 +3312,16 @@ export namespace Prisma {
    * Property update
    */
   export type PropertyUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Property
      */
     select?: PropertySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -3077,7 +3340,7 @@ export namespace Prisma {
    * Property updateMany
    */
   export type PropertyUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * The data used to update Properties.
@@ -3090,18 +3353,61 @@ export namespace Prisma {
      * Filter which Properties to update
      */
     where?: PropertyWhereInput;
+    /**
+     * Limit how many Properties to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * Property updateManyAndReturn
+   */
+  export type PropertyUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the Property
+     */
+    select?: PropertySelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
+    /**
+     * The data used to update Properties.
+     */
+    data: XOR<
+      PropertyUpdateManyMutationInput,
+      PropertyUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which Properties to update
+     */
+    where?: PropertyWhereInput;
+    /**
+     * Limit how many Properties to update.
+     */
+    limit?: number;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyIncludeUpdateManyAndReturn<ExtArgs> | null;
   };
 
   /**
    * Property upsert
    */
   export type PropertyUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Property
      */
     select?: PropertySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -3124,12 +3430,16 @@ export namespace Prisma {
    * Property delete
    */
   export type PropertyDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Property
      */
     select?: PropertySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -3144,24 +3454,32 @@ export namespace Prisma {
    * Property deleteMany
    */
   export type PropertyDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Filter which Properties to delete
      */
     where?: PropertyWhereInput;
+    /**
+     * Limit how many Properties to delete.
+     */
+    limit?: number;
   };
 
   /**
    * Property.leases
    */
   export type Property$leasesArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Lease
      */
     select?: LeaseSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Lease
+     */
+    omit?: LeaseOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -3178,12 +3496,16 @@ export namespace Prisma {
    * Property.applications
    */
   export type Property$applicationsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Application
      */
     select?: ApplicationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -3202,12 +3524,16 @@ export namespace Prisma {
    * Property.favoritedBy
    */
   export type Property$favoritedByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Tenant
      */
     select?: TenantSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Tenant
+     */
+    omit?: TenantOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -3224,12 +3550,16 @@ export namespace Prisma {
    * Property.tenants
    */
   export type Property$tenantsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Tenant
      */
     select?: TenantSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Tenant
+     */
+    omit?: TenantOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -3246,12 +3576,16 @@ export namespace Prisma {
    * Property without action
    */
   export type PropertyDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Property
      */
     select?: PropertySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -3337,7 +3671,7 @@ export namespace Prisma {
   };
 
   export type ManagerAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Filter which Manager to aggregate.
@@ -3410,7 +3744,7 @@ export namespace Prisma {
   };
 
   export type ManagerGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: ManagerWhereInput;
     orderBy?:
@@ -3454,7 +3788,7 @@ export namespace Prisma {
     >;
 
   export type ManagerSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = $Extensions.GetSelect<
     {
       id?: boolean;
@@ -3469,7 +3803,20 @@ export namespace Prisma {
   >;
 
   export type ManagerSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      cognitoId?: boolean;
+      name?: boolean;
+      email?: boolean;
+      phoneNumber?: boolean;
+    },
+    ExtArgs["result"]["manager"]
+  >;
+
+  export type ManagerSelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = $Extensions.GetSelect<
     {
       id?: boolean;
@@ -3489,18 +3836,27 @@ export namespace Prisma {
     phoneNumber?: boolean;
   };
 
+  export type ManagerOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetOmit<
+    "id" | "cognitoId" | "name" | "email" | "phoneNumber",
+    ExtArgs["result"]["manager"]
+  >;
   export type ManagerInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     managedProperties?: boolean | Manager$managedPropertiesArgs<ExtArgs>;
     _count?: boolean | ManagerCountOutputTypeDefaultArgs<ExtArgs>;
   };
   export type ManagerIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {};
+  export type ManagerIncludeUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {};
 
   export type $ManagerPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     name: "Manager";
     objects: {
@@ -3520,17 +3876,18 @@ export namespace Prisma {
   };
 
   type ManagerGetPayload<
-    S extends boolean | null | undefined | ManagerDefaultArgs
+    S extends boolean | null | undefined | ManagerDefaultArgs,
   > = $Result.GetResult<Prisma.$ManagerPayload, S>;
 
   type ManagerCountArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = Omit<ManagerFindManyArgs, "select" | "include" | "distinct"> & {
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = Omit<ManagerFindManyArgs, "select" | "include" | "distinct" | "omit"> & {
     select?: ManagerCountAggregateInputType | true;
   };
 
   export interface ManagerDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    ClientOptions = {},
   > {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>["model"]["Manager"];
@@ -3548,15 +3905,17 @@ export namespace Prisma {
      * })
      */
     findUnique<T extends ManagerFindUniqueArgs>(
-      args: SelectSubset<T, ManagerFindUniqueArgs<ExtArgs>>
+      args: SelectSubset<T, ManagerFindUniqueArgs<ExtArgs>>,
     ): Prisma__ManagerClient<
       $Result.GetResult<
         Prisma.$ManagerPayload<ExtArgs>,
         T,
-        "findUnique"
+        "findUnique",
+        ClientOptions
       > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -3572,15 +3931,17 @@ export namespace Prisma {
      * })
      */
     findUniqueOrThrow<T extends ManagerFindUniqueOrThrowArgs>(
-      args: SelectSubset<T, ManagerFindUniqueOrThrowArgs<ExtArgs>>
+      args: SelectSubset<T, ManagerFindUniqueOrThrowArgs<ExtArgs>>,
     ): Prisma__ManagerClient<
       $Result.GetResult<
         Prisma.$ManagerPayload<ExtArgs>,
         T,
-        "findUniqueOrThrow"
+        "findUniqueOrThrow",
+        ClientOptions
       >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -3597,11 +3958,17 @@ export namespace Prisma {
      * })
      */
     findFirst<T extends ManagerFindFirstArgs>(
-      args?: SelectSubset<T, ManagerFindFirstArgs<ExtArgs>>
+      args?: SelectSubset<T, ManagerFindFirstArgs<ExtArgs>>,
     ): Prisma__ManagerClient<
-      $Result.GetResult<Prisma.$ManagerPayload<ExtArgs>, T, "findFirst"> | null,
+      $Result.GetResult<
+        Prisma.$ManagerPayload<ExtArgs>,
+        T,
+        "findFirst",
+        ClientOptions
+      > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -3619,11 +3986,17 @@ export namespace Prisma {
      * })
      */
     findFirstOrThrow<T extends ManagerFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, ManagerFindFirstOrThrowArgs<ExtArgs>>
+      args?: SelectSubset<T, ManagerFindFirstOrThrowArgs<ExtArgs>>,
     ): Prisma__ManagerClient<
-      $Result.GetResult<Prisma.$ManagerPayload<ExtArgs>, T, "findFirstOrThrow">,
+      $Result.GetResult<
+        Prisma.$ManagerPayload<ExtArgs>,
+        T,
+        "findFirstOrThrow",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -3643,9 +4016,14 @@ export namespace Prisma {
      *
      */
     findMany<T extends ManagerFindManyArgs>(
-      args?: SelectSubset<T, ManagerFindManyArgs<ExtArgs>>
+      args?: SelectSubset<T, ManagerFindManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$ManagerPayload<ExtArgs>, T, "findMany">
+      $Result.GetResult<
+        Prisma.$ManagerPayload<ExtArgs>,
+        T,
+        "findMany",
+        ClientOptions
+      >
     >;
 
     /**
@@ -3661,11 +4039,17 @@ export namespace Prisma {
      *
      */
     create<T extends ManagerCreateArgs>(
-      args: SelectSubset<T, ManagerCreateArgs<ExtArgs>>
+      args: SelectSubset<T, ManagerCreateArgs<ExtArgs>>,
     ): Prisma__ManagerClient<
-      $Result.GetResult<Prisma.$ManagerPayload<ExtArgs>, T, "create">,
+      $Result.GetResult<
+        Prisma.$ManagerPayload<ExtArgs>,
+        T,
+        "create",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -3681,7 +4065,7 @@ export namespace Prisma {
      *
      */
     createMany<T extends ManagerCreateManyArgs>(
-      args?: SelectSubset<T, ManagerCreateManyArgs<ExtArgs>>
+      args?: SelectSubset<T, ManagerCreateManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
 
     /**
@@ -3707,12 +4091,13 @@ export namespace Prisma {
      *
      */
     createManyAndReturn<T extends ManagerCreateManyAndReturnArgs>(
-      args?: SelectSubset<T, ManagerCreateManyAndReturnArgs<ExtArgs>>
+      args?: SelectSubset<T, ManagerCreateManyAndReturnArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
       $Result.GetResult<
         Prisma.$ManagerPayload<ExtArgs>,
         T,
-        "createManyAndReturn"
+        "createManyAndReturn",
+        ClientOptions
       >
     >;
 
@@ -3729,11 +4114,17 @@ export namespace Prisma {
      *
      */
     delete<T extends ManagerDeleteArgs>(
-      args: SelectSubset<T, ManagerDeleteArgs<ExtArgs>>
+      args: SelectSubset<T, ManagerDeleteArgs<ExtArgs>>,
     ): Prisma__ManagerClient<
-      $Result.GetResult<Prisma.$ManagerPayload<ExtArgs>, T, "delete">,
+      $Result.GetResult<
+        Prisma.$ManagerPayload<ExtArgs>,
+        T,
+        "delete",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -3752,11 +4143,17 @@ export namespace Prisma {
      *
      */
     update<T extends ManagerUpdateArgs>(
-      args: SelectSubset<T, ManagerUpdateArgs<ExtArgs>>
+      args: SelectSubset<T, ManagerUpdateArgs<ExtArgs>>,
     ): Prisma__ManagerClient<
-      $Result.GetResult<Prisma.$ManagerPayload<ExtArgs>, T, "update">,
+      $Result.GetResult<
+        Prisma.$ManagerPayload<ExtArgs>,
+        T,
+        "update",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -3772,7 +4169,7 @@ export namespace Prisma {
      *
      */
     deleteMany<T extends ManagerDeleteManyArgs>(
-      args?: SelectSubset<T, ManagerDeleteManyArgs<ExtArgs>>
+      args?: SelectSubset<T, ManagerDeleteManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
 
     /**
@@ -3793,8 +4190,47 @@ export namespace Prisma {
      *
      */
     updateMany<T extends ManagerUpdateManyArgs>(
-      args: SelectSubset<T, ManagerUpdateManyArgs<ExtArgs>>
+      args: SelectSubset<T, ManagerUpdateManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more Managers and returns the data updated in the database.
+     * @param {ManagerUpdateManyAndReturnArgs} args - Arguments to update many Managers.
+     * @example
+     * // Update many Managers
+     * const manager = await prisma.manager.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more Managers and only return the `id`
+     * const managerWithIdOnly = await prisma.manager.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends ManagerUpdateManyAndReturnArgs>(
+      args: SelectSubset<T, ManagerUpdateManyAndReturnArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$ManagerPayload<ExtArgs>,
+        T,
+        "updateManyAndReturn",
+        ClientOptions
+      >
+    >;
 
     /**
      * Create or update one Manager.
@@ -3814,11 +4250,17 @@ export namespace Prisma {
      * })
      */
     upsert<T extends ManagerUpsertArgs>(
-      args: SelectSubset<T, ManagerUpsertArgs<ExtArgs>>
+      args: SelectSubset<T, ManagerUpsertArgs<ExtArgs>>,
     ): Prisma__ManagerClient<
-      $Result.GetResult<Prisma.$ManagerPayload<ExtArgs>, T, "upsert">,
+      $Result.GetResult<
+        Prisma.$ManagerPayload<ExtArgs>,
+        T,
+        "upsert",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -3835,7 +4277,7 @@ export namespace Prisma {
      * })
      **/
     count<T extends ManagerCountArgs>(
-      args?: Subset<T, ManagerCountArgs>
+      args?: Subset<T, ManagerCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<"select", any>
         ? T["select"] extends true
@@ -3869,7 +4311,7 @@ export namespace Prisma {
      * })
      **/
     aggregate<T extends ManagerAggregateArgs>(
-      args: Subset<T, ManagerAggregateArgs>
+      args: Subset<T, ManagerAggregateArgs>,
     ): Prisma.PrismaPromise<GetManagerAggregateType<T>>;
 
     /**
@@ -3910,47 +4352,47 @@ export namespace Prisma {
       InputErrors extends ByEmpty extends True
         ? `Error: "by" must not be empty.`
         : HavingValid extends False
-        ? {
-            [P in HavingFields]: P extends ByFields
-              ? never
-              : P extends string
-              ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-              : [
-                  Error,
-                  "Field ",
-                  P,
-                  ` in "having" needs to be provided in "by"`
-                ];
-          }[HavingFields]
-        : "take" extends Keys<T>
-        ? "orderBy" extends Keys<T>
-          ? ByValid extends True
-            ? {}
-            : {
-                [P in OrderFields]: P extends ByFields
-                  ? never
-                  : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-              }[OrderFields]
-          : 'Error: If you provide "take", you also need to provide "orderBy"'
-        : "skip" extends Keys<T>
-        ? "orderBy" extends Keys<T>
-          ? ByValid extends True
-            ? {}
-            : {
-                [P in OrderFields]: P extends ByFields
-                  ? never
-                  : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-              }[OrderFields]
-          : 'Error: If you provide "skip", you also need to provide "orderBy"'
-        : ByValid extends True
-        ? {}
-        : {
-            [P in OrderFields]: P extends ByFields
-              ? never
-              : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-          }[OrderFields]
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [
+                      Error,
+                      "Field ",
+                      P,
+                      ` in "having" needs to be provided in "by"`,
+                    ];
+            }[HavingFields]
+          : "take" extends Keys<T>
+            ? "orderBy" extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : "skip" extends Keys<T>
+              ? "orderBy" extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields],
     >(
-      args: SubsetIntersection<T, ManagerGroupByArgs, OrderByArg> & InputErrors
+      args: SubsetIntersection<T, ManagerGroupByArgs, OrderByArg> & InputErrors,
     ): {} extends InputErrors
       ? GetManagerGroupByPayload<T>
       : Prisma.PrismaPromise<InputErrors>;
@@ -3969,13 +4411,20 @@ export namespace Prisma {
   export interface Prisma__ManagerClient<
     T,
     Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    ClientOptions = {},
   > extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise";
     managedProperties<T extends Manager$managedPropertiesArgs<ExtArgs> = {}>(
-      args?: Subset<T, Manager$managedPropertiesArgs<ExtArgs>>
+      args?: Subset<T, Manager$managedPropertiesArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findMany"> | Null
+      | $Result.GetResult<
+          Prisma.$PropertyPayload<ExtArgs>,
+          T,
+          "findMany",
+          ClientOptions
+        >
+      | Null
     >;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3991,7 +4440,7 @@ export namespace Prisma {
       onrejected?:
         | ((reason: any) => TResult2 | PromiseLike<TResult2>)
         | undefined
-        | null
+        | null,
     ): $Utils.JsPromise<TResult1 | TResult2>;
     /**
      * Attaches a callback for only the rejection of the Promise.
@@ -4002,7 +4451,7 @@ export namespace Prisma {
       onrejected?:
         | ((reason: any) => TResult | PromiseLike<TResult>)
         | undefined
-        | null
+        | null,
     ): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
@@ -4029,12 +4478,16 @@ export namespace Prisma {
    * Manager findUnique
    */
   export type ManagerFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Manager
      */
     select?: ManagerSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Manager
+     */
+    omit?: ManagerOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -4049,12 +4502,16 @@ export namespace Prisma {
    * Manager findUniqueOrThrow
    */
   export type ManagerFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Manager
      */
     select?: ManagerSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Manager
+     */
+    omit?: ManagerOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -4069,12 +4526,16 @@ export namespace Prisma {
    * Manager findFirst
    */
   export type ManagerFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Manager
      */
     select?: ManagerSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Manager
+     */
+    omit?: ManagerOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -4121,12 +4582,16 @@ export namespace Prisma {
    * Manager findFirstOrThrow
    */
   export type ManagerFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Manager
      */
     select?: ManagerSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Manager
+     */
+    omit?: ManagerOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -4173,12 +4638,16 @@ export namespace Prisma {
    * Manager findMany
    */
   export type ManagerFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Manager
      */
     select?: ManagerSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Manager
+     */
+    omit?: ManagerOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -4220,12 +4689,16 @@ export namespace Prisma {
    * Manager create
    */
   export type ManagerCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Manager
      */
     select?: ManagerSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Manager
+     */
+    omit?: ManagerOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -4240,7 +4713,7 @@ export namespace Prisma {
    * Manager createMany
    */
   export type ManagerCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * The data used to create many Managers.
@@ -4253,12 +4726,16 @@ export namespace Prisma {
    * Manager createManyAndReturn
    */
   export type ManagerCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Manager
      */
     select?: ManagerSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Manager
+     */
+    omit?: ManagerOmit<ExtArgs> | null;
     /**
      * The data used to create many Managers.
      */
@@ -4270,12 +4747,16 @@ export namespace Prisma {
    * Manager update
    */
   export type ManagerUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Manager
      */
     select?: ManagerSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Manager
+     */
+    omit?: ManagerOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -4294,7 +4775,7 @@ export namespace Prisma {
    * Manager updateMany
    */
   export type ManagerUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * The data used to update Managers.
@@ -4304,18 +4785,54 @@ export namespace Prisma {
      * Filter which Managers to update
      */
     where?: ManagerWhereInput;
+    /**
+     * Limit how many Managers to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * Manager updateManyAndReturn
+   */
+  export type ManagerUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the Manager
+     */
+    select?: ManagerSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Manager
+     */
+    omit?: ManagerOmit<ExtArgs> | null;
+    /**
+     * The data used to update Managers.
+     */
+    data: XOR<ManagerUpdateManyMutationInput, ManagerUncheckedUpdateManyInput>;
+    /**
+     * Filter which Managers to update
+     */
+    where?: ManagerWhereInput;
+    /**
+     * Limit how many Managers to update.
+     */
+    limit?: number;
   };
 
   /**
    * Manager upsert
    */
   export type ManagerUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Manager
      */
     select?: ManagerSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Manager
+     */
+    omit?: ManagerOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -4338,12 +4855,16 @@ export namespace Prisma {
    * Manager delete
    */
   export type ManagerDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Manager
      */
     select?: ManagerSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Manager
+     */
+    omit?: ManagerOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -4358,24 +4879,32 @@ export namespace Prisma {
    * Manager deleteMany
    */
   export type ManagerDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Filter which Managers to delete
      */
     where?: ManagerWhereInput;
+    /**
+     * Limit how many Managers to delete.
+     */
+    limit?: number;
   };
 
   /**
    * Manager.managedProperties
    */
   export type Manager$managedPropertiesArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Property
      */
     select?: PropertySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -4394,12 +4923,16 @@ export namespace Prisma {
    * Manager without action
    */
   export type ManagerDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Manager
      */
     select?: ManagerSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Manager
+     */
+    omit?: ManagerOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -4485,7 +5018,7 @@ export namespace Prisma {
   };
 
   export type TenantAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Filter which Tenant to aggregate.
@@ -4556,7 +5089,7 @@ export namespace Prisma {
   };
 
   export type TenantGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: TenantWhereInput;
     orderBy?:
@@ -4600,7 +5133,7 @@ export namespace Prisma {
     >;
 
   export type TenantSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = $Extensions.GetSelect<
     {
       id?: boolean;
@@ -4618,7 +5151,20 @@ export namespace Prisma {
   >;
 
   export type TenantSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      cognitoId?: boolean;
+      name?: boolean;
+      email?: boolean;
+      phoneNumber?: boolean;
+    },
+    ExtArgs["result"]["tenant"]
+  >;
+
+  export type TenantSelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = $Extensions.GetSelect<
     {
       id?: boolean;
@@ -4638,8 +5184,14 @@ export namespace Prisma {
     phoneNumber?: boolean;
   };
 
+  export type TenantOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetOmit<
+    "id" | "cognitoId" | "name" | "email" | "phoneNumber",
+    ExtArgs["result"]["tenant"]
+  >;
   export type TenantInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     properties?: boolean | Tenant$propertiesArgs<ExtArgs>;
     favorites?: boolean | Tenant$favoritesArgs<ExtArgs>;
@@ -4648,11 +5200,14 @@ export namespace Prisma {
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>;
   };
   export type TenantIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {};
+  export type TenantIncludeUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {};
 
   export type $TenantPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     name: "Tenant";
     objects: {
@@ -4675,17 +5230,18 @@ export namespace Prisma {
   };
 
   type TenantGetPayload<
-    S extends boolean | null | undefined | TenantDefaultArgs
+    S extends boolean | null | undefined | TenantDefaultArgs,
   > = $Result.GetResult<Prisma.$TenantPayload, S>;
 
   type TenantCountArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = Omit<TenantFindManyArgs, "select" | "include" | "distinct"> & {
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = Omit<TenantFindManyArgs, "select" | "include" | "distinct" | "omit"> & {
     select?: TenantCountAggregateInputType | true;
   };
 
   export interface TenantDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    ClientOptions = {},
   > {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>["model"]["Tenant"];
@@ -4703,11 +5259,17 @@ export namespace Prisma {
      * })
      */
     findUnique<T extends TenantFindUniqueArgs>(
-      args: SelectSubset<T, TenantFindUniqueArgs<ExtArgs>>
+      args: SelectSubset<T, TenantFindUniqueArgs<ExtArgs>>,
     ): Prisma__TenantClient<
-      $Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUnique"> | null,
+      $Result.GetResult<
+        Prisma.$TenantPayload<ExtArgs>,
+        T,
+        "findUnique",
+        ClientOptions
+      > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -4723,11 +5285,17 @@ export namespace Prisma {
      * })
      */
     findUniqueOrThrow<T extends TenantFindUniqueOrThrowArgs>(
-      args: SelectSubset<T, TenantFindUniqueOrThrowArgs<ExtArgs>>
+      args: SelectSubset<T, TenantFindUniqueOrThrowArgs<ExtArgs>>,
     ): Prisma__TenantClient<
-      $Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow">,
+      $Result.GetResult<
+        Prisma.$TenantPayload<ExtArgs>,
+        T,
+        "findUniqueOrThrow",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -4744,11 +5312,17 @@ export namespace Prisma {
      * })
      */
     findFirst<T extends TenantFindFirstArgs>(
-      args?: SelectSubset<T, TenantFindFirstArgs<ExtArgs>>
+      args?: SelectSubset<T, TenantFindFirstArgs<ExtArgs>>,
     ): Prisma__TenantClient<
-      $Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findFirst"> | null,
+      $Result.GetResult<
+        Prisma.$TenantPayload<ExtArgs>,
+        T,
+        "findFirst",
+        ClientOptions
+      > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -4766,11 +5340,17 @@ export namespace Prisma {
      * })
      */
     findFirstOrThrow<T extends TenantFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, TenantFindFirstOrThrowArgs<ExtArgs>>
+      args?: SelectSubset<T, TenantFindFirstOrThrowArgs<ExtArgs>>,
     ): Prisma__TenantClient<
-      $Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findFirstOrThrow">,
+      $Result.GetResult<
+        Prisma.$TenantPayload<ExtArgs>,
+        T,
+        "findFirstOrThrow",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -4790,9 +5370,14 @@ export namespace Prisma {
      *
      */
     findMany<T extends TenantFindManyArgs>(
-      args?: SelectSubset<T, TenantFindManyArgs<ExtArgs>>
+      args?: SelectSubset<T, TenantFindManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findMany">
+      $Result.GetResult<
+        Prisma.$TenantPayload<ExtArgs>,
+        T,
+        "findMany",
+        ClientOptions
+      >
     >;
 
     /**
@@ -4808,11 +5393,17 @@ export namespace Prisma {
      *
      */
     create<T extends TenantCreateArgs>(
-      args: SelectSubset<T, TenantCreateArgs<ExtArgs>>
+      args: SelectSubset<T, TenantCreateArgs<ExtArgs>>,
     ): Prisma__TenantClient<
-      $Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "create">,
+      $Result.GetResult<
+        Prisma.$TenantPayload<ExtArgs>,
+        T,
+        "create",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -4828,7 +5419,7 @@ export namespace Prisma {
      *
      */
     createMany<T extends TenantCreateManyArgs>(
-      args?: SelectSubset<T, TenantCreateManyArgs<ExtArgs>>
+      args?: SelectSubset<T, TenantCreateManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
 
     /**
@@ -4854,12 +5445,13 @@ export namespace Prisma {
      *
      */
     createManyAndReturn<T extends TenantCreateManyAndReturnArgs>(
-      args?: SelectSubset<T, TenantCreateManyAndReturnArgs<ExtArgs>>
+      args?: SelectSubset<T, TenantCreateManyAndReturnArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
       $Result.GetResult<
         Prisma.$TenantPayload<ExtArgs>,
         T,
-        "createManyAndReturn"
+        "createManyAndReturn",
+        ClientOptions
       >
     >;
 
@@ -4876,11 +5468,17 @@ export namespace Prisma {
      *
      */
     delete<T extends TenantDeleteArgs>(
-      args: SelectSubset<T, TenantDeleteArgs<ExtArgs>>
+      args: SelectSubset<T, TenantDeleteArgs<ExtArgs>>,
     ): Prisma__TenantClient<
-      $Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "delete">,
+      $Result.GetResult<
+        Prisma.$TenantPayload<ExtArgs>,
+        T,
+        "delete",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -4899,11 +5497,17 @@ export namespace Prisma {
      *
      */
     update<T extends TenantUpdateArgs>(
-      args: SelectSubset<T, TenantUpdateArgs<ExtArgs>>
+      args: SelectSubset<T, TenantUpdateArgs<ExtArgs>>,
     ): Prisma__TenantClient<
-      $Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "update">,
+      $Result.GetResult<
+        Prisma.$TenantPayload<ExtArgs>,
+        T,
+        "update",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -4919,7 +5523,7 @@ export namespace Prisma {
      *
      */
     deleteMany<T extends TenantDeleteManyArgs>(
-      args?: SelectSubset<T, TenantDeleteManyArgs<ExtArgs>>
+      args?: SelectSubset<T, TenantDeleteManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
 
     /**
@@ -4940,8 +5544,47 @@ export namespace Prisma {
      *
      */
     updateMany<T extends TenantUpdateManyArgs>(
-      args: SelectSubset<T, TenantUpdateManyArgs<ExtArgs>>
+      args: SelectSubset<T, TenantUpdateManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more Tenants and returns the data updated in the database.
+     * @param {TenantUpdateManyAndReturnArgs} args - Arguments to update many Tenants.
+     * @example
+     * // Update many Tenants
+     * const tenant = await prisma.tenant.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more Tenants and only return the `id`
+     * const tenantWithIdOnly = await prisma.tenant.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends TenantUpdateManyAndReturnArgs>(
+      args: SelectSubset<T, TenantUpdateManyAndReturnArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$TenantPayload<ExtArgs>,
+        T,
+        "updateManyAndReturn",
+        ClientOptions
+      >
+    >;
 
     /**
      * Create or update one Tenant.
@@ -4961,11 +5604,17 @@ export namespace Prisma {
      * })
      */
     upsert<T extends TenantUpsertArgs>(
-      args: SelectSubset<T, TenantUpsertArgs<ExtArgs>>
+      args: SelectSubset<T, TenantUpsertArgs<ExtArgs>>,
     ): Prisma__TenantClient<
-      $Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "upsert">,
+      $Result.GetResult<
+        Prisma.$TenantPayload<ExtArgs>,
+        T,
+        "upsert",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -4982,7 +5631,7 @@ export namespace Prisma {
      * })
      **/
     count<T extends TenantCountArgs>(
-      args?: Subset<T, TenantCountArgs>
+      args?: Subset<T, TenantCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<"select", any>
         ? T["select"] extends true
@@ -5016,7 +5665,7 @@ export namespace Prisma {
      * })
      **/
     aggregate<T extends TenantAggregateArgs>(
-      args: Subset<T, TenantAggregateArgs>
+      args: Subset<T, TenantAggregateArgs>,
     ): Prisma.PrismaPromise<GetTenantAggregateType<T>>;
 
     /**
@@ -5057,47 +5706,47 @@ export namespace Prisma {
       InputErrors extends ByEmpty extends True
         ? `Error: "by" must not be empty.`
         : HavingValid extends False
-        ? {
-            [P in HavingFields]: P extends ByFields
-              ? never
-              : P extends string
-              ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-              : [
-                  Error,
-                  "Field ",
-                  P,
-                  ` in "having" needs to be provided in "by"`
-                ];
-          }[HavingFields]
-        : "take" extends Keys<T>
-        ? "orderBy" extends Keys<T>
-          ? ByValid extends True
-            ? {}
-            : {
-                [P in OrderFields]: P extends ByFields
-                  ? never
-                  : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-              }[OrderFields]
-          : 'Error: If you provide "take", you also need to provide "orderBy"'
-        : "skip" extends Keys<T>
-        ? "orderBy" extends Keys<T>
-          ? ByValid extends True
-            ? {}
-            : {
-                [P in OrderFields]: P extends ByFields
-                  ? never
-                  : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-              }[OrderFields]
-          : 'Error: If you provide "skip", you also need to provide "orderBy"'
-        : ByValid extends True
-        ? {}
-        : {
-            [P in OrderFields]: P extends ByFields
-              ? never
-              : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-          }[OrderFields]
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [
+                      Error,
+                      "Field ",
+                      P,
+                      ` in "having" needs to be provided in "by"`,
+                    ];
+            }[HavingFields]
+          : "take" extends Keys<T>
+            ? "orderBy" extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : "skip" extends Keys<T>
+              ? "orderBy" extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields],
     >(
-      args: SubsetIntersection<T, TenantGroupByArgs, OrderByArg> & InputErrors
+      args: SubsetIntersection<T, TenantGroupByArgs, OrderByArg> & InputErrors,
     ): {} extends InputErrors
       ? GetTenantGroupByPayload<T>
       : Prisma.PrismaPromise<InputErrors>;
@@ -5116,29 +5765,53 @@ export namespace Prisma {
   export interface Prisma__TenantClient<
     T,
     Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    ClientOptions = {},
   > extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise";
     properties<T extends Tenant$propertiesArgs<ExtArgs> = {}>(
-      args?: Subset<T, Tenant$propertiesArgs<ExtArgs>>
+      args?: Subset<T, Tenant$propertiesArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findMany"> | Null
+      | $Result.GetResult<
+          Prisma.$PropertyPayload<ExtArgs>,
+          T,
+          "findMany",
+          ClientOptions
+        >
+      | Null
     >;
     favorites<T extends Tenant$favoritesArgs<ExtArgs> = {}>(
-      args?: Subset<T, Tenant$favoritesArgs<ExtArgs>>
+      args?: Subset<T, Tenant$favoritesArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findMany"> | Null
+      | $Result.GetResult<
+          Prisma.$PropertyPayload<ExtArgs>,
+          T,
+          "findMany",
+          ClientOptions
+        >
+      | Null
     >;
     applications<T extends Tenant$applicationsArgs<ExtArgs> = {}>(
-      args?: Subset<T, Tenant$applicationsArgs<ExtArgs>>
+      args?: Subset<T, Tenant$applicationsArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      | $Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findMany">
+      | $Result.GetResult<
+          Prisma.$ApplicationPayload<ExtArgs>,
+          T,
+          "findMany",
+          ClientOptions
+        >
       | Null
     >;
     leases<T extends Tenant$leasesArgs<ExtArgs> = {}>(
-      args?: Subset<T, Tenant$leasesArgs<ExtArgs>>
+      args?: Subset<T, Tenant$leasesArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "findMany"> | Null
+      | $Result.GetResult<
+          Prisma.$LeasePayload<ExtArgs>,
+          T,
+          "findMany",
+          ClientOptions
+        >
+      | Null
     >;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -5154,7 +5827,7 @@ export namespace Prisma {
       onrejected?:
         | ((reason: any) => TResult2 | PromiseLike<TResult2>)
         | undefined
-        | null
+        | null,
     ): $Utils.JsPromise<TResult1 | TResult2>;
     /**
      * Attaches a callback for only the rejection of the Promise.
@@ -5165,7 +5838,7 @@ export namespace Prisma {
       onrejected?:
         | ((reason: any) => TResult | PromiseLike<TResult>)
         | undefined
-        | null
+        | null,
     ): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
@@ -5192,12 +5865,16 @@ export namespace Prisma {
    * Tenant findUnique
    */
   export type TenantFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Tenant
      */
     select?: TenantSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Tenant
+     */
+    omit?: TenantOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5212,12 +5889,16 @@ export namespace Prisma {
    * Tenant findUniqueOrThrow
    */
   export type TenantFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Tenant
      */
     select?: TenantSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Tenant
+     */
+    omit?: TenantOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5232,12 +5913,16 @@ export namespace Prisma {
    * Tenant findFirst
    */
   export type TenantFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Tenant
      */
     select?: TenantSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Tenant
+     */
+    omit?: TenantOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5282,12 +5967,16 @@ export namespace Prisma {
    * Tenant findFirstOrThrow
    */
   export type TenantFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Tenant
      */
     select?: TenantSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Tenant
+     */
+    omit?: TenantOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5332,12 +6021,16 @@ export namespace Prisma {
    * Tenant findMany
    */
   export type TenantFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Tenant
      */
     select?: TenantSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Tenant
+     */
+    omit?: TenantOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5377,12 +6070,16 @@ export namespace Prisma {
    * Tenant create
    */
   export type TenantCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Tenant
      */
     select?: TenantSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Tenant
+     */
+    omit?: TenantOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5397,7 +6094,7 @@ export namespace Prisma {
    * Tenant createMany
    */
   export type TenantCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * The data used to create many Tenants.
@@ -5410,12 +6107,16 @@ export namespace Prisma {
    * Tenant createManyAndReturn
    */
   export type TenantCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Tenant
      */
     select?: TenantSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Tenant
+     */
+    omit?: TenantOmit<ExtArgs> | null;
     /**
      * The data used to create many Tenants.
      */
@@ -5427,12 +6128,16 @@ export namespace Prisma {
    * Tenant update
    */
   export type TenantUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Tenant
      */
     select?: TenantSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Tenant
+     */
+    omit?: TenantOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5451,7 +6156,7 @@ export namespace Prisma {
    * Tenant updateMany
    */
   export type TenantUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * The data used to update Tenants.
@@ -5461,18 +6166,54 @@ export namespace Prisma {
      * Filter which Tenants to update
      */
     where?: TenantWhereInput;
+    /**
+     * Limit how many Tenants to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * Tenant updateManyAndReturn
+   */
+  export type TenantUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the Tenant
+     */
+    select?: TenantSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Tenant
+     */
+    omit?: TenantOmit<ExtArgs> | null;
+    /**
+     * The data used to update Tenants.
+     */
+    data: XOR<TenantUpdateManyMutationInput, TenantUncheckedUpdateManyInput>;
+    /**
+     * Filter which Tenants to update
+     */
+    where?: TenantWhereInput;
+    /**
+     * Limit how many Tenants to update.
+     */
+    limit?: number;
   };
 
   /**
    * Tenant upsert
    */
   export type TenantUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Tenant
      */
     select?: TenantSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Tenant
+     */
+    omit?: TenantOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5495,12 +6236,16 @@ export namespace Prisma {
    * Tenant delete
    */
   export type TenantDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Tenant
      */
     select?: TenantSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Tenant
+     */
+    omit?: TenantOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5515,24 +6260,32 @@ export namespace Prisma {
    * Tenant deleteMany
    */
   export type TenantDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Filter which Tenants to delete
      */
     where?: TenantWhereInput;
+    /**
+     * Limit how many Tenants to delete.
+     */
+    limit?: number;
   };
 
   /**
    * Tenant.properties
    */
   export type Tenant$propertiesArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Property
      */
     select?: PropertySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5551,12 +6304,16 @@ export namespace Prisma {
    * Tenant.favorites
    */
   export type Tenant$favoritesArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Property
      */
     select?: PropertySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5575,12 +6332,16 @@ export namespace Prisma {
    * Tenant.applications
    */
   export type Tenant$applicationsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Application
      */
     select?: ApplicationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5599,12 +6360,16 @@ export namespace Prisma {
    * Tenant.leases
    */
   export type Tenant$leasesArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Lease
      */
     select?: LeaseSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Lease
+     */
+    omit?: LeaseOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5621,12 +6386,16 @@ export namespace Prisma {
    * Tenant without action
    */
   export type TenantDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Tenant
      */
     select?: TenantSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Tenant
+     */
+    omit?: TenantOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5718,7 +6487,7 @@ export namespace Prisma {
   };
 
   export type LocationAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Filter which Location to aggregate.
@@ -5791,7 +6560,7 @@ export namespace Prisma {
   };
 
   export type LocationGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: LocationWhereInput;
     orderBy?:
@@ -5836,7 +6605,7 @@ export namespace Prisma {
     >;
 
   export type LocationSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = $Extensions.GetSelect<
     {
       id?: boolean;
@@ -5851,6 +6620,20 @@ export namespace Prisma {
     ExtArgs["result"]["location"]
   >;
 
+  export type LocationSelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      address?: boolean;
+      city?: boolean;
+      state?: boolean;
+      country?: boolean;
+      postalCode?: boolean;
+    },
+    ExtArgs["result"]["location"]
+  >;
+
   export type LocationSelectScalar = {
     id?: boolean;
     address?: boolean;
@@ -5860,15 +6643,24 @@ export namespace Prisma {
     postalCode?: boolean;
   };
 
+  export type LocationOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetOmit<
+    "id" | "address" | "city" | "state" | "country" | "postalCode",
+    ExtArgs["result"]["location"]
+  >;
   export type LocationInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     properties?: boolean | Location$propertiesArgs<ExtArgs>;
     _count?: boolean | LocationCountOutputTypeDefaultArgs<ExtArgs>;
   };
+  export type LocationIncludeUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {};
 
   export type $LocationPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     name: "Location";
     objects: {
@@ -5889,17 +6681,18 @@ export namespace Prisma {
   };
 
   type LocationGetPayload<
-    S extends boolean | null | undefined | LocationDefaultArgs
+    S extends boolean | null | undefined | LocationDefaultArgs,
   > = $Result.GetResult<Prisma.$LocationPayload, S>;
 
   type LocationCountArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = Omit<LocationFindManyArgs, "select" | "include" | "distinct"> & {
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = Omit<LocationFindManyArgs, "select" | "include" | "distinct" | "omit"> & {
     select?: LocationCountAggregateInputType | true;
   };
 
   export interface LocationDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    ClientOptions = {},
   > {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>["model"]["Location"];
@@ -5917,15 +6710,17 @@ export namespace Prisma {
      * })
      */
     findUnique<T extends LocationFindUniqueArgs>(
-      args: SelectSubset<T, LocationFindUniqueArgs<ExtArgs>>
+      args: SelectSubset<T, LocationFindUniqueArgs<ExtArgs>>,
     ): Prisma__LocationClient<
       $Result.GetResult<
         Prisma.$LocationPayload<ExtArgs>,
         T,
-        "findUnique"
+        "findUnique",
+        ClientOptions
       > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -5941,15 +6736,17 @@ export namespace Prisma {
      * })
      */
     findUniqueOrThrow<T extends LocationFindUniqueOrThrowArgs>(
-      args: SelectSubset<T, LocationFindUniqueOrThrowArgs<ExtArgs>>
+      args: SelectSubset<T, LocationFindUniqueOrThrowArgs<ExtArgs>>,
     ): Prisma__LocationClient<
       $Result.GetResult<
         Prisma.$LocationPayload<ExtArgs>,
         T,
-        "findUniqueOrThrow"
+        "findUniqueOrThrow",
+        ClientOptions
       >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -5966,15 +6763,17 @@ export namespace Prisma {
      * })
      */
     findFirst<T extends LocationFindFirstArgs>(
-      args?: SelectSubset<T, LocationFindFirstArgs<ExtArgs>>
+      args?: SelectSubset<T, LocationFindFirstArgs<ExtArgs>>,
     ): Prisma__LocationClient<
       $Result.GetResult<
         Prisma.$LocationPayload<ExtArgs>,
         T,
-        "findFirst"
+        "findFirst",
+        ClientOptions
       > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -5992,15 +6791,17 @@ export namespace Prisma {
      * })
      */
     findFirstOrThrow<T extends LocationFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, LocationFindFirstOrThrowArgs<ExtArgs>>
+      args?: SelectSubset<T, LocationFindFirstOrThrowArgs<ExtArgs>>,
     ): Prisma__LocationClient<
       $Result.GetResult<
         Prisma.$LocationPayload<ExtArgs>,
         T,
-        "findFirstOrThrow"
+        "findFirstOrThrow",
+        ClientOptions
       >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -6020,9 +6821,14 @@ export namespace Prisma {
      *
      */
     findMany<T extends LocationFindManyArgs>(
-      args?: SelectSubset<T, LocationFindManyArgs<ExtArgs>>
+      args?: SelectSubset<T, LocationFindManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$LocationPayload<ExtArgs>, T, "findMany">
+      $Result.GetResult<
+        Prisma.$LocationPayload<ExtArgs>,
+        T,
+        "findMany",
+        ClientOptions
+      >
     >;
 
     /**
@@ -6038,11 +6844,17 @@ export namespace Prisma {
      *
      */
     delete<T extends LocationDeleteArgs>(
-      args: SelectSubset<T, LocationDeleteArgs<ExtArgs>>
+      args: SelectSubset<T, LocationDeleteArgs<ExtArgs>>,
     ): Prisma__LocationClient<
-      $Result.GetResult<Prisma.$LocationPayload<ExtArgs>, T, "delete">,
+      $Result.GetResult<
+        Prisma.$LocationPayload<ExtArgs>,
+        T,
+        "delete",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -6061,11 +6873,17 @@ export namespace Prisma {
      *
      */
     update<T extends LocationUpdateArgs>(
-      args: SelectSubset<T, LocationUpdateArgs<ExtArgs>>
+      args: SelectSubset<T, LocationUpdateArgs<ExtArgs>>,
     ): Prisma__LocationClient<
-      $Result.GetResult<Prisma.$LocationPayload<ExtArgs>, T, "update">,
+      $Result.GetResult<
+        Prisma.$LocationPayload<ExtArgs>,
+        T,
+        "update",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -6081,7 +6899,7 @@ export namespace Prisma {
      *
      */
     deleteMany<T extends LocationDeleteManyArgs>(
-      args?: SelectSubset<T, LocationDeleteManyArgs<ExtArgs>>
+      args?: SelectSubset<T, LocationDeleteManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
 
     /**
@@ -6102,8 +6920,47 @@ export namespace Prisma {
      *
      */
     updateMany<T extends LocationUpdateManyArgs>(
-      args: SelectSubset<T, LocationUpdateManyArgs<ExtArgs>>
+      args: SelectSubset<T, LocationUpdateManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more Locations and returns the data updated in the database.
+     * @param {LocationUpdateManyAndReturnArgs} args - Arguments to update many Locations.
+     * @example
+     * // Update many Locations
+     * const location = await prisma.location.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more Locations and only return the `id`
+     * const locationWithIdOnly = await prisma.location.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends LocationUpdateManyAndReturnArgs>(
+      args: SelectSubset<T, LocationUpdateManyAndReturnArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$LocationPayload<ExtArgs>,
+        T,
+        "updateManyAndReturn",
+        ClientOptions
+      >
+    >;
 
     /**
      * Count the number of Locations.
@@ -6119,7 +6976,7 @@ export namespace Prisma {
      * })
      **/
     count<T extends LocationCountArgs>(
-      args?: Subset<T, LocationCountArgs>
+      args?: Subset<T, LocationCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<"select", any>
         ? T["select"] extends true
@@ -6153,7 +7010,7 @@ export namespace Prisma {
      * })
      **/
     aggregate<T extends LocationAggregateArgs>(
-      args: Subset<T, LocationAggregateArgs>
+      args: Subset<T, LocationAggregateArgs>,
     ): Prisma.PrismaPromise<GetLocationAggregateType<T>>;
 
     /**
@@ -6194,47 +7051,48 @@ export namespace Prisma {
       InputErrors extends ByEmpty extends True
         ? `Error: "by" must not be empty.`
         : HavingValid extends False
-        ? {
-            [P in HavingFields]: P extends ByFields
-              ? never
-              : P extends string
-              ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-              : [
-                  Error,
-                  "Field ",
-                  P,
-                  ` in "having" needs to be provided in "by"`
-                ];
-          }[HavingFields]
-        : "take" extends Keys<T>
-        ? "orderBy" extends Keys<T>
-          ? ByValid extends True
-            ? {}
-            : {
-                [P in OrderFields]: P extends ByFields
-                  ? never
-                  : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-              }[OrderFields]
-          : 'Error: If you provide "take", you also need to provide "orderBy"'
-        : "skip" extends Keys<T>
-        ? "orderBy" extends Keys<T>
-          ? ByValid extends True
-            ? {}
-            : {
-                [P in OrderFields]: P extends ByFields
-                  ? never
-                  : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-              }[OrderFields]
-          : 'Error: If you provide "skip", you also need to provide "orderBy"'
-        : ByValid extends True
-        ? {}
-        : {
-            [P in OrderFields]: P extends ByFields
-              ? never
-              : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-          }[OrderFields]
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [
+                      Error,
+                      "Field ",
+                      P,
+                      ` in "having" needs to be provided in "by"`,
+                    ];
+            }[HavingFields]
+          : "take" extends Keys<T>
+            ? "orderBy" extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : "skip" extends Keys<T>
+              ? "orderBy" extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields],
     >(
-      args: SubsetIntersection<T, LocationGroupByArgs, OrderByArg> & InputErrors
+      args: SubsetIntersection<T, LocationGroupByArgs, OrderByArg> &
+        InputErrors,
     ): {} extends InputErrors
       ? GetLocationGroupByPayload<T>
       : Prisma.PrismaPromise<InputErrors>;
@@ -6253,13 +7111,20 @@ export namespace Prisma {
   export interface Prisma__LocationClient<
     T,
     Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    ClientOptions = {},
   > extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise";
     properties<T extends Location$propertiesArgs<ExtArgs> = {}>(
-      args?: Subset<T, Location$propertiesArgs<ExtArgs>>
+      args?: Subset<T, Location$propertiesArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findMany"> | Null
+      | $Result.GetResult<
+          Prisma.$PropertyPayload<ExtArgs>,
+          T,
+          "findMany",
+          ClientOptions
+        >
+      | Null
     >;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -6275,7 +7140,7 @@ export namespace Prisma {
       onrejected?:
         | ((reason: any) => TResult2 | PromiseLike<TResult2>)
         | undefined
-        | null
+        | null,
     ): $Utils.JsPromise<TResult1 | TResult2>;
     /**
      * Attaches a callback for only the rejection of the Promise.
@@ -6286,7 +7151,7 @@ export namespace Prisma {
       onrejected?:
         | ((reason: any) => TResult | PromiseLike<TResult>)
         | undefined
-        | null
+        | null,
     ): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
@@ -6314,12 +7179,16 @@ export namespace Prisma {
    * Location findUnique
    */
   export type LocationFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Location
      */
     select?: LocationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Location
+     */
+    omit?: LocationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -6334,12 +7203,16 @@ export namespace Prisma {
    * Location findUniqueOrThrow
    */
   export type LocationFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Location
      */
     select?: LocationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Location
+     */
+    omit?: LocationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -6354,12 +7227,16 @@ export namespace Prisma {
    * Location findFirst
    */
   export type LocationFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Location
      */
     select?: LocationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Location
+     */
+    omit?: LocationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -6406,12 +7283,16 @@ export namespace Prisma {
    * Location findFirstOrThrow
    */
   export type LocationFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Location
      */
     select?: LocationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Location
+     */
+    omit?: LocationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -6458,12 +7339,16 @@ export namespace Prisma {
    * Location findMany
    */
   export type LocationFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Location
      */
     select?: LocationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Location
+     */
+    omit?: LocationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -6505,12 +7390,16 @@ export namespace Prisma {
    * Location update
    */
   export type LocationUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Location
      */
     select?: LocationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Location
+     */
+    omit?: LocationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -6529,7 +7418,7 @@ export namespace Prisma {
    * Location updateMany
    */
   export type LocationUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * The data used to update Locations.
@@ -6542,18 +7431,57 @@ export namespace Prisma {
      * Filter which Locations to update
      */
     where?: LocationWhereInput;
+    /**
+     * Limit how many Locations to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * Location updateManyAndReturn
+   */
+  export type LocationUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the Location
+     */
+    select?: LocationSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Location
+     */
+    omit?: LocationOmit<ExtArgs> | null;
+    /**
+     * The data used to update Locations.
+     */
+    data: XOR<
+      LocationUpdateManyMutationInput,
+      LocationUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which Locations to update
+     */
+    where?: LocationWhereInput;
+    /**
+     * Limit how many Locations to update.
+     */
+    limit?: number;
   };
 
   /**
    * Location delete
    */
   export type LocationDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Location
      */
     select?: LocationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Location
+     */
+    omit?: LocationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -6568,24 +7496,32 @@ export namespace Prisma {
    * Location deleteMany
    */
   export type LocationDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Filter which Locations to delete
      */
     where?: LocationWhereInput;
+    /**
+     * Limit how many Locations to delete.
+     */
+    limit?: number;
   };
 
   /**
    * Location.properties
    */
   export type Location$propertiesArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Property
      */
     select?: PropertySelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -6604,12 +7540,16 @@ export namespace Prisma {
    * Location without action
    */
   export type LocationDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Location
      */
     select?: LocationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Location
+     */
+    omit?: LocationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -6733,7 +7673,7 @@ export namespace Prisma {
   };
 
   export type ApplicationAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Filter which Application to aggregate.
@@ -6807,7 +7747,7 @@ export namespace Prisma {
     };
 
   export type ApplicationGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: ApplicationWhereInput;
     orderBy?:
@@ -6857,7 +7797,7 @@ export namespace Prisma {
     >;
 
   export type ApplicationSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = $Extensions.GetSelect<
     {
       id?: boolean;
@@ -6878,7 +7818,28 @@ export namespace Prisma {
   >;
 
   export type ApplicationSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      applicationDate?: boolean;
+      status?: boolean;
+      propertyId?: boolean;
+      tenantCognitoId?: boolean;
+      name?: boolean;
+      email?: boolean;
+      phoneNumber?: boolean;
+      message?: boolean;
+      leaseId?: boolean;
+      property?: boolean | PropertyDefaultArgs<ExtArgs>;
+      tenant?: boolean | TenantDefaultArgs<ExtArgs>;
+      lease?: boolean | Application$leaseArgs<ExtArgs>;
+    },
+    ExtArgs["result"]["application"]
+  >;
+
+  export type ApplicationSelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = $Extensions.GetSelect<
     {
       id?: boolean;
@@ -6911,15 +7872,37 @@ export namespace Prisma {
     leaseId?: boolean;
   };
 
+  export type ApplicationOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetOmit<
+    | "id"
+    | "applicationDate"
+    | "status"
+    | "propertyId"
+    | "tenantCognitoId"
+    | "name"
+    | "email"
+    | "phoneNumber"
+    | "message"
+    | "leaseId",
+    ExtArgs["result"]["application"]
+  >;
   export type ApplicationInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     property?: boolean | PropertyDefaultArgs<ExtArgs>;
     tenant?: boolean | TenantDefaultArgs<ExtArgs>;
     lease?: boolean | Application$leaseArgs<ExtArgs>;
   };
   export type ApplicationIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    property?: boolean | PropertyDefaultArgs<ExtArgs>;
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>;
+    lease?: boolean | Application$leaseArgs<ExtArgs>;
+  };
+  export type ApplicationIncludeUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     property?: boolean | PropertyDefaultArgs<ExtArgs>;
     tenant?: boolean | TenantDefaultArgs<ExtArgs>;
@@ -6927,7 +7910,7 @@ export namespace Prisma {
   };
 
   export type $ApplicationPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     name: "Application";
     objects: {
@@ -6954,17 +7937,21 @@ export namespace Prisma {
   };
 
   type ApplicationGetPayload<
-    S extends boolean | null | undefined | ApplicationDefaultArgs
+    S extends boolean | null | undefined | ApplicationDefaultArgs,
   > = $Result.GetResult<Prisma.$ApplicationPayload, S>;
 
   type ApplicationCountArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = Omit<ApplicationFindManyArgs, "select" | "include" | "distinct"> & {
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = Omit<
+    ApplicationFindManyArgs,
+    "select" | "include" | "distinct" | "omit"
+  > & {
     select?: ApplicationCountAggregateInputType | true;
   };
 
   export interface ApplicationDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    ClientOptions = {},
   > {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>["model"]["Application"];
@@ -6982,15 +7969,17 @@ export namespace Prisma {
      * })
      */
     findUnique<T extends ApplicationFindUniqueArgs>(
-      args: SelectSubset<T, ApplicationFindUniqueArgs<ExtArgs>>
+      args: SelectSubset<T, ApplicationFindUniqueArgs<ExtArgs>>,
     ): Prisma__ApplicationClient<
       $Result.GetResult<
         Prisma.$ApplicationPayload<ExtArgs>,
         T,
-        "findUnique"
+        "findUnique",
+        ClientOptions
       > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -7006,15 +7995,17 @@ export namespace Prisma {
      * })
      */
     findUniqueOrThrow<T extends ApplicationFindUniqueOrThrowArgs>(
-      args: SelectSubset<T, ApplicationFindUniqueOrThrowArgs<ExtArgs>>
+      args: SelectSubset<T, ApplicationFindUniqueOrThrowArgs<ExtArgs>>,
     ): Prisma__ApplicationClient<
       $Result.GetResult<
         Prisma.$ApplicationPayload<ExtArgs>,
         T,
-        "findUniqueOrThrow"
+        "findUniqueOrThrow",
+        ClientOptions
       >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -7031,15 +8022,17 @@ export namespace Prisma {
      * })
      */
     findFirst<T extends ApplicationFindFirstArgs>(
-      args?: SelectSubset<T, ApplicationFindFirstArgs<ExtArgs>>
+      args?: SelectSubset<T, ApplicationFindFirstArgs<ExtArgs>>,
     ): Prisma__ApplicationClient<
       $Result.GetResult<
         Prisma.$ApplicationPayload<ExtArgs>,
         T,
-        "findFirst"
+        "findFirst",
+        ClientOptions
       > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -7057,15 +8050,17 @@ export namespace Prisma {
      * })
      */
     findFirstOrThrow<T extends ApplicationFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, ApplicationFindFirstOrThrowArgs<ExtArgs>>
+      args?: SelectSubset<T, ApplicationFindFirstOrThrowArgs<ExtArgs>>,
     ): Prisma__ApplicationClient<
       $Result.GetResult<
         Prisma.$ApplicationPayload<ExtArgs>,
         T,
-        "findFirstOrThrow"
+        "findFirstOrThrow",
+        ClientOptions
       >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -7085,9 +8080,14 @@ export namespace Prisma {
      *
      */
     findMany<T extends ApplicationFindManyArgs>(
-      args?: SelectSubset<T, ApplicationFindManyArgs<ExtArgs>>
+      args?: SelectSubset<T, ApplicationFindManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findMany">
+      $Result.GetResult<
+        Prisma.$ApplicationPayload<ExtArgs>,
+        T,
+        "findMany",
+        ClientOptions
+      >
     >;
 
     /**
@@ -7103,11 +8103,17 @@ export namespace Prisma {
      *
      */
     create<T extends ApplicationCreateArgs>(
-      args: SelectSubset<T, ApplicationCreateArgs<ExtArgs>>
+      args: SelectSubset<T, ApplicationCreateArgs<ExtArgs>>,
     ): Prisma__ApplicationClient<
-      $Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "create">,
+      $Result.GetResult<
+        Prisma.$ApplicationPayload<ExtArgs>,
+        T,
+        "create",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -7123,7 +8129,7 @@ export namespace Prisma {
      *
      */
     createMany<T extends ApplicationCreateManyArgs>(
-      args?: SelectSubset<T, ApplicationCreateManyArgs<ExtArgs>>
+      args?: SelectSubset<T, ApplicationCreateManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
 
     /**
@@ -7149,12 +8155,13 @@ export namespace Prisma {
      *
      */
     createManyAndReturn<T extends ApplicationCreateManyAndReturnArgs>(
-      args?: SelectSubset<T, ApplicationCreateManyAndReturnArgs<ExtArgs>>
+      args?: SelectSubset<T, ApplicationCreateManyAndReturnArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
       $Result.GetResult<
         Prisma.$ApplicationPayload<ExtArgs>,
         T,
-        "createManyAndReturn"
+        "createManyAndReturn",
+        ClientOptions
       >
     >;
 
@@ -7171,11 +8178,17 @@ export namespace Prisma {
      *
      */
     delete<T extends ApplicationDeleteArgs>(
-      args: SelectSubset<T, ApplicationDeleteArgs<ExtArgs>>
+      args: SelectSubset<T, ApplicationDeleteArgs<ExtArgs>>,
     ): Prisma__ApplicationClient<
-      $Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "delete">,
+      $Result.GetResult<
+        Prisma.$ApplicationPayload<ExtArgs>,
+        T,
+        "delete",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -7194,11 +8207,17 @@ export namespace Prisma {
      *
      */
     update<T extends ApplicationUpdateArgs>(
-      args: SelectSubset<T, ApplicationUpdateArgs<ExtArgs>>
+      args: SelectSubset<T, ApplicationUpdateArgs<ExtArgs>>,
     ): Prisma__ApplicationClient<
-      $Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "update">,
+      $Result.GetResult<
+        Prisma.$ApplicationPayload<ExtArgs>,
+        T,
+        "update",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -7214,7 +8233,7 @@ export namespace Prisma {
      *
      */
     deleteMany<T extends ApplicationDeleteManyArgs>(
-      args?: SelectSubset<T, ApplicationDeleteManyArgs<ExtArgs>>
+      args?: SelectSubset<T, ApplicationDeleteManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
 
     /**
@@ -7235,8 +8254,47 @@ export namespace Prisma {
      *
      */
     updateMany<T extends ApplicationUpdateManyArgs>(
-      args: SelectSubset<T, ApplicationUpdateManyArgs<ExtArgs>>
+      args: SelectSubset<T, ApplicationUpdateManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more Applications and returns the data updated in the database.
+     * @param {ApplicationUpdateManyAndReturnArgs} args - Arguments to update many Applications.
+     * @example
+     * // Update many Applications
+     * const application = await prisma.application.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more Applications and only return the `id`
+     * const applicationWithIdOnly = await prisma.application.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends ApplicationUpdateManyAndReturnArgs>(
+      args: SelectSubset<T, ApplicationUpdateManyAndReturnArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$ApplicationPayload<ExtArgs>,
+        T,
+        "updateManyAndReturn",
+        ClientOptions
+      >
+    >;
 
     /**
      * Create or update one Application.
@@ -7256,11 +8314,17 @@ export namespace Prisma {
      * })
      */
     upsert<T extends ApplicationUpsertArgs>(
-      args: SelectSubset<T, ApplicationUpsertArgs<ExtArgs>>
+      args: SelectSubset<T, ApplicationUpsertArgs<ExtArgs>>,
     ): Prisma__ApplicationClient<
-      $Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "upsert">,
+      $Result.GetResult<
+        Prisma.$ApplicationPayload<ExtArgs>,
+        T,
+        "upsert",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -7277,7 +8341,7 @@ export namespace Prisma {
      * })
      **/
     count<T extends ApplicationCountArgs>(
-      args?: Subset<T, ApplicationCountArgs>
+      args?: Subset<T, ApplicationCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<"select", any>
         ? T["select"] extends true
@@ -7311,7 +8375,7 @@ export namespace Prisma {
      * })
      **/
     aggregate<T extends ApplicationAggregateArgs>(
-      args: Subset<T, ApplicationAggregateArgs>
+      args: Subset<T, ApplicationAggregateArgs>,
     ): Prisma.PrismaPromise<GetApplicationAggregateType<T>>;
 
     /**
@@ -7352,48 +8416,48 @@ export namespace Prisma {
       InputErrors extends ByEmpty extends True
         ? `Error: "by" must not be empty.`
         : HavingValid extends False
-        ? {
-            [P in HavingFields]: P extends ByFields
-              ? never
-              : P extends string
-              ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-              : [
-                  Error,
-                  "Field ",
-                  P,
-                  ` in "having" needs to be provided in "by"`
-                ];
-          }[HavingFields]
-        : "take" extends Keys<T>
-        ? "orderBy" extends Keys<T>
-          ? ByValid extends True
-            ? {}
-            : {
-                [P in OrderFields]: P extends ByFields
-                  ? never
-                  : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-              }[OrderFields]
-          : 'Error: If you provide "take", you also need to provide "orderBy"'
-        : "skip" extends Keys<T>
-        ? "orderBy" extends Keys<T>
-          ? ByValid extends True
-            ? {}
-            : {
-                [P in OrderFields]: P extends ByFields
-                  ? never
-                  : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-              }[OrderFields]
-          : 'Error: If you provide "skip", you also need to provide "orderBy"'
-        : ByValid extends True
-        ? {}
-        : {
-            [P in OrderFields]: P extends ByFields
-              ? never
-              : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-          }[OrderFields]
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [
+                      Error,
+                      "Field ",
+                      P,
+                      ` in "having" needs to be provided in "by"`,
+                    ];
+            }[HavingFields]
+          : "take" extends Keys<T>
+            ? "orderBy" extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : "skip" extends Keys<T>
+              ? "orderBy" extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields],
     >(
       args: SubsetIntersection<T, ApplicationGroupByArgs, OrderByArg> &
-        InputErrors
+        InputErrors,
     ): {} extends InputErrors
       ? GetApplicationGroupByPayload<T>
       : Prisma.PrismaPromise<InputErrors>;
@@ -7412,43 +8476,50 @@ export namespace Prisma {
   export interface Prisma__ApplicationClient<
     T,
     Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    ClientOptions = {},
   > extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise";
     property<T extends PropertyDefaultArgs<ExtArgs> = {}>(
-      args?: Subset<T, PropertyDefaultArgs<ExtArgs>>
+      args?: Subset<T, PropertyDefaultArgs<ExtArgs>>,
     ): Prisma__PropertyClient<
       | $Result.GetResult<
           Prisma.$PropertyPayload<ExtArgs>,
           T,
-          "findUniqueOrThrow"
+          "findUniqueOrThrow",
+          ClientOptions
         >
       | Null,
       Null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
     tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(
-      args?: Subset<T, TenantDefaultArgs<ExtArgs>>
+      args?: Subset<T, TenantDefaultArgs<ExtArgs>>,
     ): Prisma__TenantClient<
       | $Result.GetResult<
           Prisma.$TenantPayload<ExtArgs>,
           T,
-          "findUniqueOrThrow"
+          "findUniqueOrThrow",
+          ClientOptions
         >
       | Null,
       Null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
     lease<T extends Application$leaseArgs<ExtArgs> = {}>(
-      args?: Subset<T, Application$leaseArgs<ExtArgs>>
+      args?: Subset<T, Application$leaseArgs<ExtArgs>>,
     ): Prisma__LeaseClient<
       $Result.GetResult<
         Prisma.$LeasePayload<ExtArgs>,
         T,
-        "findUniqueOrThrow"
+        "findUniqueOrThrow",
+        ClientOptions
       > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -7464,7 +8535,7 @@ export namespace Prisma {
       onrejected?:
         | ((reason: any) => TResult2 | PromiseLike<TResult2>)
         | undefined
-        | null
+        | null,
     ): $Utils.JsPromise<TResult1 | TResult2>;
     /**
      * Attaches a callback for only the rejection of the Promise.
@@ -7475,7 +8546,7 @@ export namespace Prisma {
       onrejected?:
         | ((reason: any) => TResult | PromiseLike<TResult>)
         | undefined
-        | null
+        | null,
     ): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
@@ -7507,12 +8578,16 @@ export namespace Prisma {
    * Application findUnique
    */
   export type ApplicationFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Application
      */
     select?: ApplicationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -7527,12 +8602,16 @@ export namespace Prisma {
    * Application findUniqueOrThrow
    */
   export type ApplicationFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Application
      */
     select?: ApplicationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -7547,12 +8626,16 @@ export namespace Prisma {
    * Application findFirst
    */
   export type ApplicationFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Application
      */
     select?: ApplicationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -7599,12 +8682,16 @@ export namespace Prisma {
    * Application findFirstOrThrow
    */
   export type ApplicationFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Application
      */
     select?: ApplicationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -7651,12 +8738,16 @@ export namespace Prisma {
    * Application findMany
    */
   export type ApplicationFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Application
      */
     select?: ApplicationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -7698,12 +8789,16 @@ export namespace Prisma {
    * Application create
    */
   export type ApplicationCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Application
      */
     select?: ApplicationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -7718,7 +8813,7 @@ export namespace Prisma {
    * Application createMany
    */
   export type ApplicationCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * The data used to create many Applications.
@@ -7731,12 +8826,16 @@ export namespace Prisma {
    * Application createManyAndReturn
    */
   export type ApplicationCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Application
      */
     select?: ApplicationSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null;
     /**
      * The data used to create many Applications.
      */
@@ -7752,12 +8851,16 @@ export namespace Prisma {
    * Application update
    */
   export type ApplicationUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Application
      */
     select?: ApplicationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -7776,7 +8879,7 @@ export namespace Prisma {
    * Application updateMany
    */
   export type ApplicationUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * The data used to update Applications.
@@ -7789,18 +8892,61 @@ export namespace Prisma {
      * Filter which Applications to update
      */
     where?: ApplicationWhereInput;
+    /**
+     * Limit how many Applications to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * Application updateManyAndReturn
+   */
+  export type ApplicationUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the Application
+     */
+    select?: ApplicationSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null;
+    /**
+     * The data used to update Applications.
+     */
+    data: XOR<
+      ApplicationUpdateManyMutationInput,
+      ApplicationUncheckedUpdateManyInput
+    >;
+    /**
+     * Filter which Applications to update
+     */
+    where?: ApplicationWhereInput;
+    /**
+     * Limit how many Applications to update.
+     */
+    limit?: number;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationIncludeUpdateManyAndReturn<ExtArgs> | null;
   };
 
   /**
    * Application upsert
    */
   export type ApplicationUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Application
      */
     select?: ApplicationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -7823,12 +8969,16 @@ export namespace Prisma {
    * Application delete
    */
   export type ApplicationDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Application
      */
     select?: ApplicationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -7843,24 +8993,32 @@ export namespace Prisma {
    * Application deleteMany
    */
   export type ApplicationDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Filter which Applications to delete
      */
     where?: ApplicationWhereInput;
+    /**
+     * Limit how many Applications to delete.
+     */
+    limit?: number;
   };
 
   /**
    * Application.lease
    */
   export type Application$leaseArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Lease
      */
     select?: LeaseSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Lease
+     */
+    omit?: LeaseOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -7872,12 +9030,16 @@ export namespace Prisma {
    * Application without action
    */
   export type ApplicationDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Application
      */
     select?: ApplicationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -7987,7 +9149,7 @@ export namespace Prisma {
   };
 
   export type LeaseAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Filter which Lease to aggregate.
@@ -8058,7 +9220,7 @@ export namespace Prisma {
   };
 
   export type LeaseGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: LeaseWhereInput;
     orderBy?:
@@ -8104,7 +9266,7 @@ export namespace Prisma {
     >;
 
   export type LeaseSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = $Extensions.GetSelect<
     {
       id?: boolean;
@@ -8124,7 +9286,24 @@ export namespace Prisma {
   >;
 
   export type LeaseSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      startDate?: boolean;
+      endDate?: boolean;
+      rent?: boolean;
+      deposit?: boolean;
+      propertyId?: boolean;
+      tenantCognitoId?: boolean;
+      property?: boolean | PropertyDefaultArgs<ExtArgs>;
+      tenant?: boolean | TenantDefaultArgs<ExtArgs>;
+    },
+    ExtArgs["result"]["lease"]
+  >;
+
+  export type LeaseSelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = $Extensions.GetSelect<
     {
       id?: boolean;
@@ -8150,8 +9329,20 @@ export namespace Prisma {
     tenantCognitoId?: boolean;
   };
 
+  export type LeaseOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetOmit<
+    | "id"
+    | "startDate"
+    | "endDate"
+    | "rent"
+    | "deposit"
+    | "propertyId"
+    | "tenantCognitoId",
+    ExtArgs["result"]["lease"]
+  >;
   export type LeaseInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     property?: boolean | PropertyDefaultArgs<ExtArgs>;
     tenant?: boolean | TenantDefaultArgs<ExtArgs>;
@@ -8160,14 +9351,20 @@ export namespace Prisma {
     _count?: boolean | LeaseCountOutputTypeDefaultArgs<ExtArgs>;
   };
   export type LeaseIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    property?: boolean | PropertyDefaultArgs<ExtArgs>;
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>;
+  };
+  export type LeaseIncludeUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     property?: boolean | PropertyDefaultArgs<ExtArgs>;
     tenant?: boolean | TenantDefaultArgs<ExtArgs>;
   };
 
   export type $LeasePayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     name: "Lease";
     objects: {
@@ -8192,17 +9389,18 @@ export namespace Prisma {
   };
 
   type LeaseGetPayload<
-    S extends boolean | null | undefined | LeaseDefaultArgs
+    S extends boolean | null | undefined | LeaseDefaultArgs,
   > = $Result.GetResult<Prisma.$LeasePayload, S>;
 
   type LeaseCountArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = Omit<LeaseFindManyArgs, "select" | "include" | "distinct"> & {
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = Omit<LeaseFindManyArgs, "select" | "include" | "distinct" | "omit"> & {
     select?: LeaseCountAggregateInputType | true;
   };
 
   export interface LeaseDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    ClientOptions = {},
   > {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>["model"]["Lease"];
@@ -8220,11 +9418,17 @@ export namespace Prisma {
      * })
      */
     findUnique<T extends LeaseFindUniqueArgs>(
-      args: SelectSubset<T, LeaseFindUniqueArgs<ExtArgs>>
+      args: SelectSubset<T, LeaseFindUniqueArgs<ExtArgs>>,
     ): Prisma__LeaseClient<
-      $Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "findUnique"> | null,
+      $Result.GetResult<
+        Prisma.$LeasePayload<ExtArgs>,
+        T,
+        "findUnique",
+        ClientOptions
+      > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -8240,11 +9444,17 @@ export namespace Prisma {
      * })
      */
     findUniqueOrThrow<T extends LeaseFindUniqueOrThrowArgs>(
-      args: SelectSubset<T, LeaseFindUniqueOrThrowArgs<ExtArgs>>
+      args: SelectSubset<T, LeaseFindUniqueOrThrowArgs<ExtArgs>>,
     ): Prisma__LeaseClient<
-      $Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "findUniqueOrThrow">,
+      $Result.GetResult<
+        Prisma.$LeasePayload<ExtArgs>,
+        T,
+        "findUniqueOrThrow",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -8261,11 +9471,17 @@ export namespace Prisma {
      * })
      */
     findFirst<T extends LeaseFindFirstArgs>(
-      args?: SelectSubset<T, LeaseFindFirstArgs<ExtArgs>>
+      args?: SelectSubset<T, LeaseFindFirstArgs<ExtArgs>>,
     ): Prisma__LeaseClient<
-      $Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "findFirst"> | null,
+      $Result.GetResult<
+        Prisma.$LeasePayload<ExtArgs>,
+        T,
+        "findFirst",
+        ClientOptions
+      > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -8283,11 +9499,17 @@ export namespace Prisma {
      * })
      */
     findFirstOrThrow<T extends LeaseFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, LeaseFindFirstOrThrowArgs<ExtArgs>>
+      args?: SelectSubset<T, LeaseFindFirstOrThrowArgs<ExtArgs>>,
     ): Prisma__LeaseClient<
-      $Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "findFirstOrThrow">,
+      $Result.GetResult<
+        Prisma.$LeasePayload<ExtArgs>,
+        T,
+        "findFirstOrThrow",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -8307,9 +9529,14 @@ export namespace Prisma {
      *
      */
     findMany<T extends LeaseFindManyArgs>(
-      args?: SelectSubset<T, LeaseFindManyArgs<ExtArgs>>
+      args?: SelectSubset<T, LeaseFindManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "findMany">
+      $Result.GetResult<
+        Prisma.$LeasePayload<ExtArgs>,
+        T,
+        "findMany",
+        ClientOptions
+      >
     >;
 
     /**
@@ -8325,11 +9552,17 @@ export namespace Prisma {
      *
      */
     create<T extends LeaseCreateArgs>(
-      args: SelectSubset<T, LeaseCreateArgs<ExtArgs>>
+      args: SelectSubset<T, LeaseCreateArgs<ExtArgs>>,
     ): Prisma__LeaseClient<
-      $Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "create">,
+      $Result.GetResult<
+        Prisma.$LeasePayload<ExtArgs>,
+        T,
+        "create",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -8345,7 +9578,7 @@ export namespace Prisma {
      *
      */
     createMany<T extends LeaseCreateManyArgs>(
-      args?: SelectSubset<T, LeaseCreateManyArgs<ExtArgs>>
+      args?: SelectSubset<T, LeaseCreateManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
 
     /**
@@ -8371,9 +9604,14 @@ export namespace Prisma {
      *
      */
     createManyAndReturn<T extends LeaseCreateManyAndReturnArgs>(
-      args?: SelectSubset<T, LeaseCreateManyAndReturnArgs<ExtArgs>>
+      args?: SelectSubset<T, LeaseCreateManyAndReturnArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "createManyAndReturn">
+      $Result.GetResult<
+        Prisma.$LeasePayload<ExtArgs>,
+        T,
+        "createManyAndReturn",
+        ClientOptions
+      >
     >;
 
     /**
@@ -8389,11 +9627,17 @@ export namespace Prisma {
      *
      */
     delete<T extends LeaseDeleteArgs>(
-      args: SelectSubset<T, LeaseDeleteArgs<ExtArgs>>
+      args: SelectSubset<T, LeaseDeleteArgs<ExtArgs>>,
     ): Prisma__LeaseClient<
-      $Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "delete">,
+      $Result.GetResult<
+        Prisma.$LeasePayload<ExtArgs>,
+        T,
+        "delete",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -8412,11 +9656,17 @@ export namespace Prisma {
      *
      */
     update<T extends LeaseUpdateArgs>(
-      args: SelectSubset<T, LeaseUpdateArgs<ExtArgs>>
+      args: SelectSubset<T, LeaseUpdateArgs<ExtArgs>>,
     ): Prisma__LeaseClient<
-      $Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "update">,
+      $Result.GetResult<
+        Prisma.$LeasePayload<ExtArgs>,
+        T,
+        "update",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -8432,7 +9682,7 @@ export namespace Prisma {
      *
      */
     deleteMany<T extends LeaseDeleteManyArgs>(
-      args?: SelectSubset<T, LeaseDeleteManyArgs<ExtArgs>>
+      args?: SelectSubset<T, LeaseDeleteManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
 
     /**
@@ -8453,8 +9703,47 @@ export namespace Prisma {
      *
      */
     updateMany<T extends LeaseUpdateManyArgs>(
-      args: SelectSubset<T, LeaseUpdateManyArgs<ExtArgs>>
+      args: SelectSubset<T, LeaseUpdateManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more Leases and returns the data updated in the database.
+     * @param {LeaseUpdateManyAndReturnArgs} args - Arguments to update many Leases.
+     * @example
+     * // Update many Leases
+     * const lease = await prisma.lease.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more Leases and only return the `id`
+     * const leaseWithIdOnly = await prisma.lease.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends LeaseUpdateManyAndReturnArgs>(
+      args: SelectSubset<T, LeaseUpdateManyAndReturnArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$LeasePayload<ExtArgs>,
+        T,
+        "updateManyAndReturn",
+        ClientOptions
+      >
+    >;
 
     /**
      * Create or update one Lease.
@@ -8474,11 +9763,17 @@ export namespace Prisma {
      * })
      */
     upsert<T extends LeaseUpsertArgs>(
-      args: SelectSubset<T, LeaseUpsertArgs<ExtArgs>>
+      args: SelectSubset<T, LeaseUpsertArgs<ExtArgs>>,
     ): Prisma__LeaseClient<
-      $Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "upsert">,
+      $Result.GetResult<
+        Prisma.$LeasePayload<ExtArgs>,
+        T,
+        "upsert",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -8495,7 +9790,7 @@ export namespace Prisma {
      * })
      **/
     count<T extends LeaseCountArgs>(
-      args?: Subset<T, LeaseCountArgs>
+      args?: Subset<T, LeaseCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<"select", any>
         ? T["select"] extends true
@@ -8529,7 +9824,7 @@ export namespace Prisma {
      * })
      **/
     aggregate<T extends LeaseAggregateArgs>(
-      args: Subset<T, LeaseAggregateArgs>
+      args: Subset<T, LeaseAggregateArgs>,
     ): Prisma.PrismaPromise<GetLeaseAggregateType<T>>;
 
     /**
@@ -8570,47 +9865,47 @@ export namespace Prisma {
       InputErrors extends ByEmpty extends True
         ? `Error: "by" must not be empty.`
         : HavingValid extends False
-        ? {
-            [P in HavingFields]: P extends ByFields
-              ? never
-              : P extends string
-              ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-              : [
-                  Error,
-                  "Field ",
-                  P,
-                  ` in "having" needs to be provided in "by"`
-                ];
-          }[HavingFields]
-        : "take" extends Keys<T>
-        ? "orderBy" extends Keys<T>
-          ? ByValid extends True
-            ? {}
-            : {
-                [P in OrderFields]: P extends ByFields
-                  ? never
-                  : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-              }[OrderFields]
-          : 'Error: If you provide "take", you also need to provide "orderBy"'
-        : "skip" extends Keys<T>
-        ? "orderBy" extends Keys<T>
-          ? ByValid extends True
-            ? {}
-            : {
-                [P in OrderFields]: P extends ByFields
-                  ? never
-                  : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-              }[OrderFields]
-          : 'Error: If you provide "skip", you also need to provide "orderBy"'
-        : ByValid extends True
-        ? {}
-        : {
-            [P in OrderFields]: P extends ByFields
-              ? never
-              : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-          }[OrderFields]
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [
+                      Error,
+                      "Field ",
+                      P,
+                      ` in "having" needs to be provided in "by"`,
+                    ];
+            }[HavingFields]
+          : "take" extends Keys<T>
+            ? "orderBy" extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : "skip" extends Keys<T>
+              ? "orderBy" extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields],
     >(
-      args: SubsetIntersection<T, LeaseGroupByArgs, OrderByArg> & InputErrors
+      args: SubsetIntersection<T, LeaseGroupByArgs, OrderByArg> & InputErrors,
     ): {} extends InputErrors
       ? GetLeaseGroupByPayload<T>
       : Prisma.PrismaPromise<InputErrors>;
@@ -8629,48 +9924,61 @@ export namespace Prisma {
   export interface Prisma__LeaseClient<
     T,
     Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    ClientOptions = {},
   > extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise";
     property<T extends PropertyDefaultArgs<ExtArgs> = {}>(
-      args?: Subset<T, PropertyDefaultArgs<ExtArgs>>
+      args?: Subset<T, PropertyDefaultArgs<ExtArgs>>,
     ): Prisma__PropertyClient<
       | $Result.GetResult<
           Prisma.$PropertyPayload<ExtArgs>,
           T,
-          "findUniqueOrThrow"
+          "findUniqueOrThrow",
+          ClientOptions
         >
       | Null,
       Null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
     tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(
-      args?: Subset<T, TenantDefaultArgs<ExtArgs>>
+      args?: Subset<T, TenantDefaultArgs<ExtArgs>>,
     ): Prisma__TenantClient<
       | $Result.GetResult<
           Prisma.$TenantPayload<ExtArgs>,
           T,
-          "findUniqueOrThrow"
+          "findUniqueOrThrow",
+          ClientOptions
         >
       | Null,
       Null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
     application<T extends Lease$applicationArgs<ExtArgs> = {}>(
-      args?: Subset<T, Lease$applicationArgs<ExtArgs>>
+      args?: Subset<T, Lease$applicationArgs<ExtArgs>>,
     ): Prisma__ApplicationClient<
       $Result.GetResult<
         Prisma.$ApplicationPayload<ExtArgs>,
         T,
-        "findUniqueOrThrow"
+        "findUniqueOrThrow",
+        ClientOptions
       > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
     payments<T extends Lease$paymentsArgs<ExtArgs> = {}>(
-      args?: Subset<T, Lease$paymentsArgs<ExtArgs>>
+      args?: Subset<T, Lease$paymentsArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany"> | Null
+      | $Result.GetResult<
+          Prisma.$PaymentPayload<ExtArgs>,
+          T,
+          "findMany",
+          ClientOptions
+        >
+      | Null
     >;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -8686,7 +9994,7 @@ export namespace Prisma {
       onrejected?:
         | ((reason: any) => TResult2 | PromiseLike<TResult2>)
         | undefined
-        | null
+        | null,
     ): $Utils.JsPromise<TResult1 | TResult2>;
     /**
      * Attaches a callback for only the rejection of the Promise.
@@ -8697,7 +10005,7 @@ export namespace Prisma {
       onrejected?:
         | ((reason: any) => TResult | PromiseLike<TResult>)
         | undefined
-        | null
+        | null,
     ): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
@@ -8726,12 +10034,16 @@ export namespace Prisma {
    * Lease findUnique
    */
   export type LeaseFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Lease
      */
     select?: LeaseSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Lease
+     */
+    omit?: LeaseOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -8746,12 +10058,16 @@ export namespace Prisma {
    * Lease findUniqueOrThrow
    */
   export type LeaseFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Lease
      */
     select?: LeaseSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Lease
+     */
+    omit?: LeaseOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -8766,12 +10082,16 @@ export namespace Prisma {
    * Lease findFirst
    */
   export type LeaseFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Lease
      */
     select?: LeaseSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Lease
+     */
+    omit?: LeaseOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -8816,12 +10136,16 @@ export namespace Prisma {
    * Lease findFirstOrThrow
    */
   export type LeaseFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Lease
      */
     select?: LeaseSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Lease
+     */
+    omit?: LeaseOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -8866,12 +10190,16 @@ export namespace Prisma {
    * Lease findMany
    */
   export type LeaseFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Lease
      */
     select?: LeaseSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Lease
+     */
+    omit?: LeaseOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -8911,12 +10239,16 @@ export namespace Prisma {
    * Lease create
    */
   export type LeaseCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Lease
      */
     select?: LeaseSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Lease
+     */
+    omit?: LeaseOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -8931,7 +10263,7 @@ export namespace Prisma {
    * Lease createMany
    */
   export type LeaseCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * The data used to create many Leases.
@@ -8944,12 +10276,16 @@ export namespace Prisma {
    * Lease createManyAndReturn
    */
   export type LeaseCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Lease
      */
     select?: LeaseSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Lease
+     */
+    omit?: LeaseOmit<ExtArgs> | null;
     /**
      * The data used to create many Leases.
      */
@@ -8965,12 +10301,16 @@ export namespace Prisma {
    * Lease update
    */
   export type LeaseUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Lease
      */
     select?: LeaseSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Lease
+     */
+    omit?: LeaseOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -8989,7 +10329,7 @@ export namespace Prisma {
    * Lease updateMany
    */
   export type LeaseUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * The data used to update Leases.
@@ -8999,18 +10339,58 @@ export namespace Prisma {
      * Filter which Leases to update
      */
     where?: LeaseWhereInput;
+    /**
+     * Limit how many Leases to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * Lease updateManyAndReturn
+   */
+  export type LeaseUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the Lease
+     */
+    select?: LeaseSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Lease
+     */
+    omit?: LeaseOmit<ExtArgs> | null;
+    /**
+     * The data used to update Leases.
+     */
+    data: XOR<LeaseUpdateManyMutationInput, LeaseUncheckedUpdateManyInput>;
+    /**
+     * Filter which Leases to update
+     */
+    where?: LeaseWhereInput;
+    /**
+     * Limit how many Leases to update.
+     */
+    limit?: number;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeaseIncludeUpdateManyAndReturn<ExtArgs> | null;
   };
 
   /**
    * Lease upsert
    */
   export type LeaseUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Lease
      */
     select?: LeaseSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Lease
+     */
+    omit?: LeaseOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -9033,12 +10413,16 @@ export namespace Prisma {
    * Lease delete
    */
   export type LeaseDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Lease
      */
     select?: LeaseSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Lease
+     */
+    omit?: LeaseOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -9053,24 +10437,32 @@ export namespace Prisma {
    * Lease deleteMany
    */
   export type LeaseDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Filter which Leases to delete
      */
     where?: LeaseWhereInput;
+    /**
+     * Limit how many Leases to delete.
+     */
+    limit?: number;
   };
 
   /**
    * Lease.application
    */
   export type Lease$applicationArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Application
      */
     select?: ApplicationSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -9082,12 +10474,16 @@ export namespace Prisma {
    * Lease.payments
    */
   export type Lease$paymentsArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Payment
      */
     select?: PaymentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Payment
+     */
+    omit?: PaymentOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -9106,12 +10502,16 @@ export namespace Prisma {
    * Lease without action
    */
   export type LeaseDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Lease
      */
     select?: LeaseSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Lease
+     */
+    omit?: LeaseOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -9221,7 +10621,7 @@ export namespace Prisma {
   };
 
   export type PaymentAggregateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Filter which Payment to aggregate.
@@ -9294,7 +10694,7 @@ export namespace Prisma {
   };
 
   export type PaymentGroupByArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     where?: PaymentWhereInput;
     orderBy?:
@@ -9340,7 +10740,7 @@ export namespace Prisma {
     >;
 
   export type PaymentSelect<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = $Extensions.GetSelect<
     {
       id?: boolean;
@@ -9356,7 +10756,23 @@ export namespace Prisma {
   >;
 
   export type PaymentSelectCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetSelect<
+    {
+      id?: boolean;
+      amountDue?: boolean;
+      amountPaid?: boolean;
+      dueDate?: boolean;
+      paymentDate?: boolean;
+      paymentStatus?: boolean;
+      leaseId?: boolean;
+      lease?: boolean | LeaseDefaultArgs<ExtArgs>;
+    },
+    ExtArgs["result"]["payment"]
+  >;
+
+  export type PaymentSelectUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = $Extensions.GetSelect<
     {
       id?: boolean;
@@ -9381,19 +10797,36 @@ export namespace Prisma {
     leaseId?: boolean;
   };
 
+  export type PaymentOmit<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = $Extensions.GetOmit<
+    | "id"
+    | "amountDue"
+    | "amountPaid"
+    | "dueDate"
+    | "paymentDate"
+    | "paymentStatus"
+    | "leaseId",
+    ExtArgs["result"]["payment"]
+  >;
   export type PaymentInclude<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     lease?: boolean | LeaseDefaultArgs<ExtArgs>;
   };
   export type PaymentIncludeCreateManyAndReturn<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    lease?: boolean | LeaseDefaultArgs<ExtArgs>;
+  };
+  export type PaymentIncludeUpdateManyAndReturn<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     lease?: boolean | LeaseDefaultArgs<ExtArgs>;
   };
 
   export type $PaymentPayload<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     name: "Payment";
     objects: {
@@ -9415,17 +10848,18 @@ export namespace Prisma {
   };
 
   type PaymentGetPayload<
-    S extends boolean | null | undefined | PaymentDefaultArgs
+    S extends boolean | null | undefined | PaymentDefaultArgs,
   > = $Result.GetResult<Prisma.$PaymentPayload, S>;
 
   type PaymentCountArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = Omit<PaymentFindManyArgs, "select" | "include" | "distinct"> & {
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = Omit<PaymentFindManyArgs, "select" | "include" | "distinct" | "omit"> & {
     select?: PaymentCountAggregateInputType | true;
   };
 
   export interface PaymentDelegate<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    ClientOptions = {},
   > {
     [K: symbol]: {
       types: Prisma.TypeMap<ExtArgs>["model"]["Payment"];
@@ -9443,15 +10877,17 @@ export namespace Prisma {
      * })
      */
     findUnique<T extends PaymentFindUniqueArgs>(
-      args: SelectSubset<T, PaymentFindUniqueArgs<ExtArgs>>
+      args: SelectSubset<T, PaymentFindUniqueArgs<ExtArgs>>,
     ): Prisma__PaymentClient<
       $Result.GetResult<
         Prisma.$PaymentPayload<ExtArgs>,
         T,
-        "findUnique"
+        "findUnique",
+        ClientOptions
       > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -9467,15 +10903,17 @@ export namespace Prisma {
      * })
      */
     findUniqueOrThrow<T extends PaymentFindUniqueOrThrowArgs>(
-      args: SelectSubset<T, PaymentFindUniqueOrThrowArgs<ExtArgs>>
+      args: SelectSubset<T, PaymentFindUniqueOrThrowArgs<ExtArgs>>,
     ): Prisma__PaymentClient<
       $Result.GetResult<
         Prisma.$PaymentPayload<ExtArgs>,
         T,
-        "findUniqueOrThrow"
+        "findUniqueOrThrow",
+        ClientOptions
       >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -9492,11 +10930,17 @@ export namespace Prisma {
      * })
      */
     findFirst<T extends PaymentFindFirstArgs>(
-      args?: SelectSubset<T, PaymentFindFirstArgs<ExtArgs>>
+      args?: SelectSubset<T, PaymentFindFirstArgs<ExtArgs>>,
     ): Prisma__PaymentClient<
-      $Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findFirst"> | null,
+      $Result.GetResult<
+        Prisma.$PaymentPayload<ExtArgs>,
+        T,
+        "findFirst",
+        ClientOptions
+      > | null,
       null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -9514,11 +10958,17 @@ export namespace Prisma {
      * })
      */
     findFirstOrThrow<T extends PaymentFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, PaymentFindFirstOrThrowArgs<ExtArgs>>
+      args?: SelectSubset<T, PaymentFindFirstOrThrowArgs<ExtArgs>>,
     ): Prisma__PaymentClient<
-      $Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findFirstOrThrow">,
+      $Result.GetResult<
+        Prisma.$PaymentPayload<ExtArgs>,
+        T,
+        "findFirstOrThrow",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -9538,9 +10988,14 @@ export namespace Prisma {
      *
      */
     findMany<T extends PaymentFindManyArgs>(
-      args?: SelectSubset<T, PaymentFindManyArgs<ExtArgs>>
+      args?: SelectSubset<T, PaymentFindManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
-      $Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany">
+      $Result.GetResult<
+        Prisma.$PaymentPayload<ExtArgs>,
+        T,
+        "findMany",
+        ClientOptions
+      >
     >;
 
     /**
@@ -9556,11 +11011,17 @@ export namespace Prisma {
      *
      */
     create<T extends PaymentCreateArgs>(
-      args: SelectSubset<T, PaymentCreateArgs<ExtArgs>>
+      args: SelectSubset<T, PaymentCreateArgs<ExtArgs>>,
     ): Prisma__PaymentClient<
-      $Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "create">,
+      $Result.GetResult<
+        Prisma.$PaymentPayload<ExtArgs>,
+        T,
+        "create",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -9576,7 +11037,7 @@ export namespace Prisma {
      *
      */
     createMany<T extends PaymentCreateManyArgs>(
-      args?: SelectSubset<T, PaymentCreateManyArgs<ExtArgs>>
+      args?: SelectSubset<T, PaymentCreateManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
 
     /**
@@ -9602,12 +11063,13 @@ export namespace Prisma {
      *
      */
     createManyAndReturn<T extends PaymentCreateManyAndReturnArgs>(
-      args?: SelectSubset<T, PaymentCreateManyAndReturnArgs<ExtArgs>>
+      args?: SelectSubset<T, PaymentCreateManyAndReturnArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<
       $Result.GetResult<
         Prisma.$PaymentPayload<ExtArgs>,
         T,
-        "createManyAndReturn"
+        "createManyAndReturn",
+        ClientOptions
       >
     >;
 
@@ -9624,11 +11086,17 @@ export namespace Prisma {
      *
      */
     delete<T extends PaymentDeleteArgs>(
-      args: SelectSubset<T, PaymentDeleteArgs<ExtArgs>>
+      args: SelectSubset<T, PaymentDeleteArgs<ExtArgs>>,
     ): Prisma__PaymentClient<
-      $Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "delete">,
+      $Result.GetResult<
+        Prisma.$PaymentPayload<ExtArgs>,
+        T,
+        "delete",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -9647,11 +11115,17 @@ export namespace Prisma {
      *
      */
     update<T extends PaymentUpdateArgs>(
-      args: SelectSubset<T, PaymentUpdateArgs<ExtArgs>>
+      args: SelectSubset<T, PaymentUpdateArgs<ExtArgs>>,
     ): Prisma__PaymentClient<
-      $Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "update">,
+      $Result.GetResult<
+        Prisma.$PaymentPayload<ExtArgs>,
+        T,
+        "update",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -9667,7 +11141,7 @@ export namespace Prisma {
      *
      */
     deleteMany<T extends PaymentDeleteManyArgs>(
-      args?: SelectSubset<T, PaymentDeleteManyArgs<ExtArgs>>
+      args?: SelectSubset<T, PaymentDeleteManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
 
     /**
@@ -9688,8 +11162,47 @@ export namespace Prisma {
      *
      */
     updateMany<T extends PaymentUpdateManyArgs>(
-      args: SelectSubset<T, PaymentUpdateManyArgs<ExtArgs>>
+      args: SelectSubset<T, PaymentUpdateManyArgs<ExtArgs>>,
     ): Prisma.PrismaPromise<BatchPayload>;
+
+    /**
+     * Update zero or more Payments and returns the data updated in the database.
+     * @param {PaymentUpdateManyAndReturnArgs} args - Arguments to update many Payments.
+     * @example
+     * // Update many Payments
+     * const payment = await prisma.payment.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *
+     * // Update zero or more Payments and only return the `id`
+     * const paymentWithIdOnly = await prisma.payment.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     *
+     */
+    updateManyAndReturn<T extends PaymentUpdateManyAndReturnArgs>(
+      args: SelectSubset<T, PaymentUpdateManyAndReturnArgs<ExtArgs>>,
+    ): Prisma.PrismaPromise<
+      $Result.GetResult<
+        Prisma.$PaymentPayload<ExtArgs>,
+        T,
+        "updateManyAndReturn",
+        ClientOptions
+      >
+    >;
 
     /**
      * Create or update one Payment.
@@ -9709,11 +11222,17 @@ export namespace Prisma {
      * })
      */
     upsert<T extends PaymentUpsertArgs>(
-      args: SelectSubset<T, PaymentUpsertArgs<ExtArgs>>
+      args: SelectSubset<T, PaymentUpsertArgs<ExtArgs>>,
     ): Prisma__PaymentClient<
-      $Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "upsert">,
+      $Result.GetResult<
+        Prisma.$PaymentPayload<ExtArgs>,
+        T,
+        "upsert",
+        ClientOptions
+      >,
       never,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
 
     /**
@@ -9730,7 +11249,7 @@ export namespace Prisma {
      * })
      **/
     count<T extends PaymentCountArgs>(
-      args?: Subset<T, PaymentCountArgs>
+      args?: Subset<T, PaymentCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<"select", any>
         ? T["select"] extends true
@@ -9764,7 +11283,7 @@ export namespace Prisma {
      * })
      **/
     aggregate<T extends PaymentAggregateArgs>(
-      args: Subset<T, PaymentAggregateArgs>
+      args: Subset<T, PaymentAggregateArgs>,
     ): Prisma.PrismaPromise<GetPaymentAggregateType<T>>;
 
     /**
@@ -9805,47 +11324,47 @@ export namespace Prisma {
       InputErrors extends ByEmpty extends True
         ? `Error: "by" must not be empty.`
         : HavingValid extends False
-        ? {
-            [P in HavingFields]: P extends ByFields
-              ? never
-              : P extends string
-              ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-              : [
-                  Error,
-                  "Field ",
-                  P,
-                  ` in "having" needs to be provided in "by"`
-                ];
-          }[HavingFields]
-        : "take" extends Keys<T>
-        ? "orderBy" extends Keys<T>
-          ? ByValid extends True
-            ? {}
-            : {
-                [P in OrderFields]: P extends ByFields
-                  ? never
-                  : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-              }[OrderFields]
-          : 'Error: If you provide "take", you also need to provide "orderBy"'
-        : "skip" extends Keys<T>
-        ? "orderBy" extends Keys<T>
-          ? ByValid extends True
-            ? {}
-            : {
-                [P in OrderFields]: P extends ByFields
-                  ? never
-                  : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-              }[OrderFields]
-          : 'Error: If you provide "skip", you also need to provide "orderBy"'
-        : ByValid extends True
-        ? {}
-        : {
-            [P in OrderFields]: P extends ByFields
-              ? never
-              : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
-          }[OrderFields]
+          ? {
+              [P in HavingFields]: P extends ByFields
+                ? never
+                : P extends string
+                  ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+                  : [
+                      Error,
+                      "Field ",
+                      P,
+                      ` in "having" needs to be provided in "by"`,
+                    ];
+            }[HavingFields]
+          : "take" extends Keys<T>
+            ? "orderBy" extends Keys<T>
+              ? ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields]
+              : 'Error: If you provide "take", you also need to provide "orderBy"'
+            : "skip" extends Keys<T>
+              ? "orderBy" extends Keys<T>
+                ? ByValid extends True
+                  ? {}
+                  : {
+                      [P in OrderFields]: P extends ByFields
+                        ? never
+                        : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                    }[OrderFields]
+                : 'Error: If you provide "skip", you also need to provide "orderBy"'
+              : ByValid extends True
+                ? {}
+                : {
+                    [P in OrderFields]: P extends ByFields
+                      ? never
+                      : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+                  }[OrderFields],
     >(
-      args: SubsetIntersection<T, PaymentGroupByArgs, OrderByArg> & InputErrors
+      args: SubsetIntersection<T, PaymentGroupByArgs, OrderByArg> & InputErrors,
     ): {} extends InputErrors
       ? GetPaymentGroupByPayload<T>
       : Prisma.PrismaPromise<InputErrors>;
@@ -9864,16 +11383,23 @@ export namespace Prisma {
   export interface Prisma__PaymentClient<
     T,
     Null = never,
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+    ClientOptions = {},
   > extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise";
     lease<T extends LeaseDefaultArgs<ExtArgs> = {}>(
-      args?: Subset<T, LeaseDefaultArgs<ExtArgs>>
+      args?: Subset<T, LeaseDefaultArgs<ExtArgs>>,
     ): Prisma__LeaseClient<
-      | $Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "findUniqueOrThrow">
+      | $Result.GetResult<
+          Prisma.$LeasePayload<ExtArgs>,
+          T,
+          "findUniqueOrThrow",
+          ClientOptions
+        >
       | Null,
       Null,
-      ExtArgs
+      ExtArgs,
+      ClientOptions
     >;
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -9889,7 +11415,7 @@ export namespace Prisma {
       onrejected?:
         | ((reason: any) => TResult2 | PromiseLike<TResult2>)
         | undefined
-        | null
+        | null,
     ): $Utils.JsPromise<TResult1 | TResult2>;
     /**
      * Attaches a callback for only the rejection of the Promise.
@@ -9900,7 +11426,7 @@ export namespace Prisma {
       onrejected?:
         | ((reason: any) => TResult | PromiseLike<TResult>)
         | undefined
-        | null
+        | null,
     ): $Utils.JsPromise<T | TResult>;
     /**
      * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
@@ -9929,12 +11455,16 @@ export namespace Prisma {
    * Payment findUnique
    */
   export type PaymentFindUniqueArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Payment
      */
     select?: PaymentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Payment
+     */
+    omit?: PaymentOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -9949,12 +11479,16 @@ export namespace Prisma {
    * Payment findUniqueOrThrow
    */
   export type PaymentFindUniqueOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Payment
      */
     select?: PaymentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Payment
+     */
+    omit?: PaymentOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -9969,12 +11503,16 @@ export namespace Prisma {
    * Payment findFirst
    */
   export type PaymentFindFirstArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Payment
      */
     select?: PaymentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Payment
+     */
+    omit?: PaymentOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -10021,12 +11559,16 @@ export namespace Prisma {
    * Payment findFirstOrThrow
    */
   export type PaymentFindFirstOrThrowArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Payment
      */
     select?: PaymentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Payment
+     */
+    omit?: PaymentOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -10073,12 +11615,16 @@ export namespace Prisma {
    * Payment findMany
    */
   export type PaymentFindManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Payment
      */
     select?: PaymentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Payment
+     */
+    omit?: PaymentOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -10120,12 +11666,16 @@ export namespace Prisma {
    * Payment create
    */
   export type PaymentCreateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Payment
      */
     select?: PaymentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Payment
+     */
+    omit?: PaymentOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -10140,7 +11690,7 @@ export namespace Prisma {
    * Payment createMany
    */
   export type PaymentCreateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * The data used to create many Payments.
@@ -10153,12 +11703,16 @@ export namespace Prisma {
    * Payment createManyAndReturn
    */
   export type PaymentCreateManyAndReturnArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Payment
      */
     select?: PaymentSelectCreateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Payment
+     */
+    omit?: PaymentOmit<ExtArgs> | null;
     /**
      * The data used to create many Payments.
      */
@@ -10174,12 +11728,16 @@ export namespace Prisma {
    * Payment update
    */
   export type PaymentUpdateArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Payment
      */
     select?: PaymentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Payment
+     */
+    omit?: PaymentOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -10198,7 +11756,7 @@ export namespace Prisma {
    * Payment updateMany
    */
   export type PaymentUpdateManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * The data used to update Payments.
@@ -10208,18 +11766,58 @@ export namespace Prisma {
      * Filter which Payments to update
      */
     where?: PaymentWhereInput;
+    /**
+     * Limit how many Payments to update.
+     */
+    limit?: number;
+  };
+
+  /**
+   * Payment updateManyAndReturn
+   */
+  export type PaymentUpdateManyAndReturnArgs<
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
+  > = {
+    /**
+     * Select specific fields to fetch from the Payment
+     */
+    select?: PaymentSelectUpdateManyAndReturn<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Payment
+     */
+    omit?: PaymentOmit<ExtArgs> | null;
+    /**
+     * The data used to update Payments.
+     */
+    data: XOR<PaymentUpdateManyMutationInput, PaymentUncheckedUpdateManyInput>;
+    /**
+     * Filter which Payments to update
+     */
+    where?: PaymentWhereInput;
+    /**
+     * Limit how many Payments to update.
+     */
+    limit?: number;
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentIncludeUpdateManyAndReturn<ExtArgs> | null;
   };
 
   /**
    * Payment upsert
    */
   export type PaymentUpsertArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Payment
      */
     select?: PaymentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Payment
+     */
+    omit?: PaymentOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -10242,12 +11840,16 @@ export namespace Prisma {
    * Payment delete
    */
   export type PaymentDeleteArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Payment
      */
     select?: PaymentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Payment
+     */
+    omit?: PaymentOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -10262,24 +11864,32 @@ export namespace Prisma {
    * Payment deleteMany
    */
   export type PaymentDeleteManyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Filter which Payments to delete
      */
     where?: PaymentWhereInput;
+    /**
+     * Limit how many Payments to delete.
+     */
+    limit?: number;
   };
 
   /**
    * Payment without action
    */
   export type PaymentDefaultArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
+    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs,
   > = {
     /**
      * Select specific fields to fetch from the Payment
      */
     select?: PaymentSelect<ExtArgs> | null;
+    /**
+     * Omit specific fields from the Payment
+     */
+    omit?: PaymentOmit<ExtArgs> | null;
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -10599,8 +12209,8 @@ export namespace Prisma {
     numberOfReviews?: IntNullableFilter<"Property"> | number | null;
     locationId?: IntFilter<"Property"> | number;
     managerCognitoId?: StringFilter<"Property"> | string;
-    location?: XOR<LocationRelationFilter, LocationWhereInput>;
-    manager?: XOR<ManagerRelationFilter, ManagerWhereInput>;
+    location?: XOR<LocationScalarRelationFilter, LocationWhereInput>;
+    manager?: XOR<ManagerScalarRelationFilter, ManagerWhereInput>;
     leases?: LeaseListRelationFilter;
     applications?: ApplicationListRelationFilter;
     favoritedBy?: TenantListRelationFilter;
@@ -10661,8 +12271,8 @@ export namespace Prisma {
       numberOfReviews?: IntNullableFilter<"Property"> | number | null;
       locationId?: IntFilter<"Property"> | number;
       managerCognitoId?: StringFilter<"Property"> | string;
-      location?: XOR<LocationRelationFilter, LocationWhereInput>;
-      manager?: XOR<ManagerRelationFilter, ManagerWhereInput>;
+      location?: XOR<LocationScalarRelationFilter, LocationWhereInput>;
+      manager?: XOR<ManagerScalarRelationFilter, ManagerWhereInput>;
       leases?: LeaseListRelationFilter;
       applications?: ApplicationListRelationFilter;
       favoritedBy?: TenantListRelationFilter;
@@ -10959,9 +12569,9 @@ export namespace Prisma {
     phoneNumber?: StringFilter<"Application"> | string;
     message?: StringNullableFilter<"Application"> | string | null;
     leaseId?: IntNullableFilter<"Application"> | number | null;
-    property?: XOR<PropertyRelationFilter, PropertyWhereInput>;
-    tenant?: XOR<TenantRelationFilter, TenantWhereInput>;
-    lease?: XOR<LeaseNullableRelationFilter, LeaseWhereInput> | null;
+    property?: XOR<PropertyScalarRelationFilter, PropertyWhereInput>;
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>;
+    lease?: XOR<LeaseNullableScalarRelationFilter, LeaseWhereInput> | null;
   };
 
   export type ApplicationOrderByWithRelationInput = {
@@ -10997,9 +12607,9 @@ export namespace Prisma {
       email?: StringFilter<"Application"> | string;
       phoneNumber?: StringFilter<"Application"> | string;
       message?: StringNullableFilter<"Application"> | string | null;
-      property?: XOR<PropertyRelationFilter, PropertyWhereInput>;
-      tenant?: XOR<TenantRelationFilter, TenantWhereInput>;
-      lease?: XOR<LeaseNullableRelationFilter, LeaseWhereInput> | null;
+      property?: XOR<PropertyScalarRelationFilter, PropertyWhereInput>;
+      tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>;
+      lease?: XOR<LeaseNullableScalarRelationFilter, LeaseWhereInput> | null;
     },
     "id" | "leaseId"
   >;
@@ -11058,10 +12668,10 @@ export namespace Prisma {
     deposit?: FloatFilter<"Lease"> | number;
     propertyId?: IntFilter<"Lease"> | number;
     tenantCognitoId?: StringFilter<"Lease"> | string;
-    property?: XOR<PropertyRelationFilter, PropertyWhereInput>;
-    tenant?: XOR<TenantRelationFilter, TenantWhereInput>;
+    property?: XOR<PropertyScalarRelationFilter, PropertyWhereInput>;
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>;
     application?: XOR<
-      ApplicationNullableRelationFilter,
+      ApplicationNullableScalarRelationFilter,
       ApplicationWhereInput
     > | null;
     payments?: PaymentListRelationFilter;
@@ -11093,10 +12703,10 @@ export namespace Prisma {
       deposit?: FloatFilter<"Lease"> | number;
       propertyId?: IntFilter<"Lease"> | number;
       tenantCognitoId?: StringFilter<"Lease"> | string;
-      property?: XOR<PropertyRelationFilter, PropertyWhereInput>;
-      tenant?: XOR<TenantRelationFilter, TenantWhereInput>;
+      property?: XOR<PropertyScalarRelationFilter, PropertyWhereInput>;
+      tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>;
       application?: XOR<
-        ApplicationNullableRelationFilter,
+        ApplicationNullableScalarRelationFilter,
         ApplicationWhereInput
       > | null;
       payments?: PaymentListRelationFilter;
@@ -11147,7 +12757,7 @@ export namespace Prisma {
     paymentDate?: DateTimeFilter<"Payment"> | Date | string;
     paymentStatus?: EnumPaymentStatusFilter<"Payment"> | $Enums.PaymentStatus;
     leaseId?: IntFilter<"Payment"> | number;
-    lease?: XOR<LeaseRelationFilter, LeaseWhereInput>;
+    lease?: XOR<LeaseScalarRelationFilter, LeaseWhereInput>;
   };
 
   export type PaymentOrderByWithRelationInput = {
@@ -11173,7 +12783,7 @@ export namespace Prisma {
       paymentDate?: DateTimeFilter<"Payment"> | Date | string;
       paymentStatus?: EnumPaymentStatusFilter<"Payment"> | $Enums.PaymentStatus;
       leaseId?: IntFilter<"Payment"> | number;
-      lease?: XOR<LeaseRelationFilter, LeaseWhereInput>;
+      lease?: XOR<LeaseScalarRelationFilter, LeaseWhereInput>;
     },
     "id"
   >;
@@ -11912,12 +13522,12 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null;
   };
 
-  export type LocationRelationFilter = {
+  export type LocationScalarRelationFilter = {
     is?: LocationWhereInput;
     isNot?: LocationWhereInput;
   };
 
-  export type ManagerRelationFilter = {
+  export type ManagerScalarRelationFilter = {
     is?: ManagerWhereInput;
     isNot?: ManagerWhereInput;
   };
@@ -12305,17 +13915,17 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null;
   };
 
-  export type PropertyRelationFilter = {
+  export type PropertyScalarRelationFilter = {
     is?: PropertyWhereInput;
     isNot?: PropertyWhereInput;
   };
 
-  export type TenantRelationFilter = {
+  export type TenantScalarRelationFilter = {
     is?: TenantWhereInput;
     isNot?: TenantWhereInput;
   };
 
-  export type LeaseNullableRelationFilter = {
+  export type LeaseNullableScalarRelationFilter = {
     is?: LeaseWhereInput | null;
     isNot?: LeaseWhereInput | null;
   };
@@ -12411,7 +14021,7 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>;
   };
 
-  export type ApplicationNullableRelationFilter = {
+  export type ApplicationNullableScalarRelationFilter = {
     is?: ApplicationWhereInput | null;
     isNot?: ApplicationWhereInput | null;
   };
@@ -12483,7 +14093,7 @@ export namespace Prisma {
     not?: NestedEnumPaymentStatusFilter<$PrismaModel> | $Enums.PaymentStatus;
   };
 
-  export type LeaseRelationFilter = {
+  export type LeaseScalarRelationFilter = {
     is?: LeaseWhereInput;
     isNot?: LeaseWhereInput;
   };
@@ -14029,7 +15639,7 @@ export namespace Prisma {
   };
 
   export type NestedEnumApplicationStatusWithAggregatesFilter<
-    $PrismaModel = never
+    $PrismaModel = never,
   > = {
     equals?:
       | $Enums.ApplicationStatus
@@ -14082,7 +15692,7 @@ export namespace Prisma {
   };
 
   export type NestedEnumPaymentStatusWithAggregatesFilter<
-    $PrismaModel = never
+    $PrismaModel = never,
   > = {
     equals?:
       | $Enums.PaymentStatus
@@ -16319,82 +17929,6 @@ export namespace Prisma {
       | EnumPaymentStatusFieldUpdateOperationsInput
       | $Enums.PaymentStatus;
   };
-
-  /**
-   * Aliases for legacy arg types
-   */
-  /**
-   * @deprecated Use PropertyCountOutputTypeDefaultArgs instead
-   */
-  export type PropertyCountOutputTypeArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = PropertyCountOutputTypeDefaultArgs<ExtArgs>;
-  /**
-   * @deprecated Use ManagerCountOutputTypeDefaultArgs instead
-   */
-  export type ManagerCountOutputTypeArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = ManagerCountOutputTypeDefaultArgs<ExtArgs>;
-  /**
-   * @deprecated Use TenantCountOutputTypeDefaultArgs instead
-   */
-  export type TenantCountOutputTypeArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = TenantCountOutputTypeDefaultArgs<ExtArgs>;
-  /**
-   * @deprecated Use LocationCountOutputTypeDefaultArgs instead
-   */
-  export type LocationCountOutputTypeArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = LocationCountOutputTypeDefaultArgs<ExtArgs>;
-  /**
-   * @deprecated Use LeaseCountOutputTypeDefaultArgs instead
-   */
-  export type LeaseCountOutputTypeArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = LeaseCountOutputTypeDefaultArgs<ExtArgs>;
-  /**
-   * @deprecated Use PropertyDefaultArgs instead
-   */
-  export type PropertyArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = PropertyDefaultArgs<ExtArgs>;
-  /**
-   * @deprecated Use ManagerDefaultArgs instead
-   */
-  export type ManagerArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = ManagerDefaultArgs<ExtArgs>;
-  /**
-   * @deprecated Use TenantDefaultArgs instead
-   */
-  export type TenantArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = TenantDefaultArgs<ExtArgs>;
-  /**
-   * @deprecated Use LocationDefaultArgs instead
-   */
-  export type LocationArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = LocationDefaultArgs<ExtArgs>;
-  /**
-   * @deprecated Use ApplicationDefaultArgs instead
-   */
-  export type ApplicationArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = ApplicationDefaultArgs<ExtArgs>;
-  /**
-   * @deprecated Use LeaseDefaultArgs instead
-   */
-  export type LeaseArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = LeaseDefaultArgs<ExtArgs>;
-  /**
-   * @deprecated Use PaymentDefaultArgs instead
-   */
-  export type PaymentArgs<
-    ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs
-  > = PaymentDefaultArgs<ExtArgs>;
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

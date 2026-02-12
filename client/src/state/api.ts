@@ -70,7 +70,10 @@ export const api = createApi({
             },
           };
         } catch (error: unknown) {
-          const message = error instanceof Error ? error.message : "Could not fetch user data";
+          const message =
+            error instanceof Error
+              ? error.message
+              : "Could not fetch user data";
           return { error: message };
         }
       },

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import prisma from "../config/database";
+import { Prisma } from "@prisma/client";
+import prisma from "../db/index";
 
 const listApplications = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -44,7 +45,7 @@ const listApplications = async (req: Request, res: Response): Promise<void> => {
     }
 
     const formattedApplications = await Promise.all(
-      applications.map(async (app) => {
+      applications.map(async (app: (typeof applications)[number]) => {
         const lease = await prisma.lease.findFirst({
           where: {
             tenant: {
@@ -111,60 +112,62 @@ const createApplication = async (
       return;
     }
 
-    const newApplication = await prisma.$transaction(async (prisma) => {
-      // Create lease first
-      const lease = await prisma.lease.create({
-        data: {
-          startDate: new Date(), // Today
-          endDate: new Date(
-            new Date().setFullYear(new Date().getFullYear() + 1),
-          ), // 1 year from today
-          rent: property.pricePerMonth,
-          deposit: property.securityDeposit,
-          property: {
-            connect: {
-              id: propertyId,
+    const newApplication = await prisma.$transaction(
+      async (prisma: Prisma.TransactionClient) => {
+        // Create lease first
+        const lease = await prisma.lease.create({
+          data: {
+            startDate: new Date(), // Today
+            endDate: new Date(
+              new Date().setFullYear(new Date().getFullYear() + 1),
+            ), // 1 year from today
+            rent: property.pricePerMonth,
+            deposit: property.securityDeposit,
+            property: {
+              connect: {
+                id: propertyId,
+              },
+            },
+            tenant: {
+              connect: {
+                cognitoId: tenantCognitoId,
+              },
             },
           },
-          tenant: {
-            connect: {
-              cognitoId: tenantCognitoId,
-            },
-          },
-        },
-      });
+        });
 
-      // Then create application with lease connection
-      const application = await prisma.application.create({
-        data: {
-          applicationDate: new Date(applicationDate),
-          status,
-          message,
-          property: {
-            connect: {
-              id: propertyId,
+        // Then create application with lease connection
+        const application = await prisma.application.create({
+          data: {
+            applicationDate: new Date(applicationDate),
+            status,
+            message,
+            property: {
+              connect: {
+                id: propertyId,
+              },
+            },
+            tenant: {
+              connect: {
+                cognitoId: tenantCognitoId,
+              },
+            },
+            lease: {
+              connect: {
+                id: lease.id,
+              },
             },
           },
-          tenant: {
-            connect: {
-              cognitoId: tenantCognitoId,
-            },
+          include: {
+            property: true,
+            tenant: true,
+            lease: true,
           },
-          lease: {
-            connect: {
-              id: lease.id,
-            },
-          },
-        },
-        include: {
-          property: true,
-          tenant: true,
-          lease: true,
-        },
-      });
+        });
 
-      return application;
-    });
+        return application;
+      },
+    );
 
     res.status(201).json(newApplication);
   } catch (error: any) {
