@@ -22,6 +22,25 @@ import { NAVBAR_HEIGHT } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
+const ApplicationCard = ({
+  application,
+  children,
+}: ApplicationCardProps) => {
+  return (
+    <div className="border rounded-lg shadow-md p-4 mb-4">
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold">
+          Property #{application.propertyId}
+        </h3>
+        <p className="text-sm text-gray-600">
+          Status: <span className="font-medium">{application.status}</span>
+        </p>
+      </div>
+      {children}
+    </div>
+  );
+};
+
 const AppSidebar = ({ userType }: AppSidebarProps) => {
   const pathname = usePathname();
   const { toggleSidebar, open } = useSidebar();
@@ -135,3 +154,4 @@ const AppSidebar = ({ userType }: AppSidebarProps) => {
 };
 
 export default AppSidebar;
+export { ApplicationCard };

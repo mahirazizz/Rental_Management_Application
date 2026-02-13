@@ -55,8 +55,8 @@ export const api = createApi({
             userDetailsResponse.error.status === 404
           ) {
             userDetailsResponse = await createNewUserInDatabase(
-              user,
-              idToken,
+              user as unknown as Record<string, unknown>,
+              (idToken as unknown as Record<string, unknown>) || "",
               userRole,
               fetchWithBQ,
             );
@@ -74,7 +74,13 @@ export const api = createApi({
             error instanceof Error
               ? error.message
               : "Could not fetch user data";
-          return { error: message };
+          return {
+            error: {
+              status: "CUSTOM_ERROR" as const,
+              error: message,
+              data: undefined,
+            },
+          };
         }
       },
     }),

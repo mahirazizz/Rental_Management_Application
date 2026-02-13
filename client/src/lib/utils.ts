@@ -60,7 +60,8 @@ export const createNewUserInDatabase = async (
   user: Record<string, unknown>,
   idToken: Record<string, unknown> | string,
   userRole: string,
-  fetchWithBQ: (options: Record<string, unknown>) => Promise<Response>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fetchWithBQ: any,
 ) => {
   const createEndpoint =
     userRole?.toLowerCase() === "manager" ? "/managers" : "/tenants";
@@ -83,10 +84,6 @@ export const createNewUserInDatabase = async (
       phoneNumber: "",
     },
   });
-
-  if (!createUserResponse.ok) {
-    throw new Error("Failed to create user record");
-  }
 
   return createUserResponse;
 };

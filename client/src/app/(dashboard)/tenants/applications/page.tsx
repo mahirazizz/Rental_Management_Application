@@ -1,6 +1,6 @@
 "use client";
 
-import ApplicationCard from "@/components/ApplicationCard";
+import { ApplicationCard } from "@/components/ApplicationCard";
 import Header from "@/components/Header";
 import Loading from "@/components/Loading";
 import { useGetApplicationsQuery, useGetAuthUserQuery } from "@/state/api";
@@ -32,7 +32,7 @@ const Applications = () => {
           <ApplicationCard
             key={application.id}
             application={application}
-            userType="renter"
+            userType="tenant"
           >
             <div className="flex justify-between gap-5 w-full pb-4 px-4">
               {application.status === "Approved" ? (

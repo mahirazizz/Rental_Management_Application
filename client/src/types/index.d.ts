@@ -91,7 +91,7 @@ declare global {
 
   interface ApplicationCardProps {
     application: Application;
-    userType: "manager" | "renter";
+    userType: "manager" | "tenant";
     children: React.ReactNode;
   }
 
@@ -133,7 +133,7 @@ declare global {
   interface User {
     cognitoInfo: AuthUser;
     userInfo: Tenant | Manager;
-    userRole: JsonObject | JsonPrimitive | JsonArray;
+    userRole: string;
   }
 }
 
