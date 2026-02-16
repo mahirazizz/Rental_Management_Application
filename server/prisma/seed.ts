@@ -1,8 +1,15 @@
 import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import fs from "fs";
 import path from "path";
+import * as dotenv from "dotenv";
 
-const prisma = new PrismaClient();
+dotenv.config();
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+});
+const prisma = new PrismaClient({ adapter });
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -137,6 +144,53 @@ async function seedModel(modelName: string, data: any[]): Promise<void> {
   }
 }
 
+async function linkTenantsToProperties(leases: any[]): Promise<void> {
+  console.log("\nLinking tenants to properties...");
+  
+  // Group leases by property to see which tenants belong to which property
+  const propertyTenantMap = new Map<number, Set<string>>();
+  
+  for (const lease of leases) {
+    if (!propertyTenantMap.has(lease.propertyId)) {
+      propertyTenantMap.set(lease.propertyId, new Set());
+    }
+    propertyTenantMap.get(lease.propertyId)!.add(lease.tenantCognitoId);
+  }
+
+  // For each property, connect its tenants
+  for (const [propertyId, tenantCognitoIds] of propertyTenantMap.entries()) {
+    try {
+      for (const cognitoId of tenantCognitoIds) {
+        // Check if tenant exists
+        const tenant = await prisma.tenant.findUnique({
+          where: { cognitoId },
+        });
+
+        if (!tenant) {
+          console.warn(`Tenant with cognitoId ${cognitoId} not found, skipping...`);
+          continue;
+        }
+
+        // Connect tenant to property
+        await prisma.property.update({
+          where: { id: propertyId },
+          data: {
+            tenants: {
+              connect: { cognitoId },
+            },
+          },
+        });
+
+        console.log(`Linked tenant ${cognitoId} to property ${propertyId}`);
+      }
+    } catch (error) {
+      console.error(`Error linking tenants to property ${propertyId}:`, error);
+    }
+  }
+
+  console.log("✅ Successfully linked tenants to properties");
+}
+
 async function main(): Promise<void> {
   const dataDirectory = path.join(__dirname, "seedData");
 
@@ -164,6 +218,7 @@ async function main(): Promise<void> {
     await deleteAllData(orderedFileNames);
 
     // Seed data in order
+    let leaseData: any[] = [];
     for (const fileName of orderedFileNames) {
       const filePath = path.join(dataDirectory, fileName);
 
@@ -181,6 +236,11 @@ async function main(): Promise<void> {
 
       const jsonData = JSON.parse(fs.readFileSync(filePath, "utf-8"));
 
+      // Store lease data for later relationship creation
+      if (modelName === "Lease") {
+        leaseData = jsonData;
+      }
+
       if (modelName === "Location") {
         await insertLocationData(jsonData);
       } else {
@@ -192,6 +252,11 @@ async function main(): Promise<void> {
 
       // Small delay to avoid overwhelming the database
       await sleep(500);
+    }
+
+    // Create tenant-property relationships based on lease data
+    if (leaseData.length > 0) {
+      await linkTenantsToProperties(leaseData);
     }
 
     console.log("\n✅ Database seeding completed successfully!");

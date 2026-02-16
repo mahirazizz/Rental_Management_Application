@@ -1,23 +1,30 @@
 "use client";
 
-import SettingsForm from "@/components/SettingsForm";
+import SettingsForm from "@/components/SettingForm";
 import {
   useGetAuthUserQuery,
   useUpdateTenantSettingsMutation,
 } from "@/state/api";
-import React from "react";
+import React, { useMemo } from "react";
 
 const TenantSettings = () => {
   const { data: authUser, isLoading } = useGetAuthUserQuery();
   const [updateTenant] = useUpdateTenantSettingsMutation();
 
-  if (isLoading) return <>Loading...</>;
+  const initialData = useMemo(
+    () => ({
+      name: authUser?.userInfo?.name ?? "",
+      email: authUser?.userInfo?.email ?? "",
+      phoneNumber: authUser?.userInfo?.phoneNumber ?? "",
+    }),
+    [
+      authUser?.userInfo?.name,
+      authUser?.userInfo?.email,
+      authUser?.userInfo?.phoneNumber,
+    ],
+  );
 
-  const initialData = {
-    name: authUser?.userInfo.name,
-    email: authUser?.userInfo.email,
-    phoneNumber: authUser?.userInfo.phoneNumber,
-  };
+  if (isLoading || !authUser) return <>Loading...</>;
 
   const handleSubmit = async (data: typeof initialData) => {
     await updateTenant({

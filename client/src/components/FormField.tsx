@@ -1,10 +1,12 @@
+"use client";
+
 import React from "react";
 import {
-  Control,
   ControllerRenderProps,
   FieldValues,
   useFormContext,
   useFieldArray,
+  Control,
 } from "react-hook-form";
 import {
   FormControl,
@@ -66,10 +68,12 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
   type = "text",
   placeholder,
   options,
+
   className,
   inputClassName,
   labelClassName,
   disabled = false,
+
   isIcon = false,
   initialValue,
 }) => {

@@ -26,6 +26,7 @@ const getProperties = async (req: Request, res: Response): Promise<void> => {
       availableFrom,
       latitude,
       longitude,
+      location,
     } = req.query;
 
     let whereConditions: Prisma.Sql[] = [];
@@ -34,6 +35,12 @@ const getProperties = async (req: Request, res: Response): Promise<void> => {
       const favoriteIdsArray = (favoriteIds as string).split(",").map(Number);
       whereConditions.push(
         Prisma.sql`p.id IN (${Prisma.join(favoriteIdsArray)})`,
+      );
+    }
+
+    if (location) {
+      whereConditions.push(
+        Prisma.sql`(l.city ILIKE ${`%${location}%`} OR l.state ILIKE ${`%${location}%`} OR l.address ILIKE ${`%${location}%`})`,
       );
     }
 
@@ -100,16 +107,20 @@ const getProperties = async (req: Request, res: Response): Promise<void> => {
     if (latitude && longitude) {
       const lat = parseFloat(latitude as string);
       const lng = parseFloat(longitude as string);
-      const radiusInKilometers = 1000;
-      const degrees = radiusInKilometers / 111; // Converts kilometers to degrees
 
-      whereConditions.push(
-        Prisma.sql`ST_DWithin(
-          l.coordinates::geometry,
-          ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326),
-          ${degrees}
-        )`,
-      );
+      // Validate coordinates
+      if (!isNaN(lat) && !isNaN(lng)) {
+        const radiusInKilometers = 1000;
+        const degrees = radiusInKilometers / 111; // Converts kilometers to degrees
+
+        whereConditions.push(
+          Prisma.sql`ST_DWithin(
+            l.coordinates::geometry,
+            ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326),
+            ${degrees}
+          )`,
+        );
+      }
     }
 
     const completeQuery = Prisma.sql`

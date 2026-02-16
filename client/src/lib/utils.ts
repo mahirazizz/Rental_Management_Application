@@ -44,15 +44,43 @@ export const withToast = async <T>(
   mutationFn: Promise<T>,
   messages: Partial<MutationMessages>,
 ) => {
-  const { success, error } = messages;
+  const { success } = messages;
 
   try {
     const result = await mutationFn;
     if (success) toast.success(success);
     return result;
-  } catch (err) {
-    if (error) toast.error(error);
-    throw err;
+  } catch (error) {
+    let errorMessage = messages.error || "An error occurred";
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (typeof error === "object" && error !== null) {
+      // Handle RTK Query errors
+      const err = error as Record<string, unknown>;
+      if (err.data !== undefined) {
+        try {
+          errorMessage = String(
+            typeof err.data === "string"
+              ? err.data
+              : (err.data as Record<string, unknown>).message ||
+                  (err.data as Record<string, unknown>).error ||
+                  err.data,
+          );
+        } catch {
+          errorMessage = String(err);
+        }
+      } else if (err.message) {
+        errorMessage = String(err.message);
+      } else if (err.error) {
+        errorMessage = String(err.error);
+      }
+    } else if (typeof error === "string") {
+      errorMessage = error;
+    }
+
+    toast.error(errorMessage);
+    return undefined;
   }
 };
 

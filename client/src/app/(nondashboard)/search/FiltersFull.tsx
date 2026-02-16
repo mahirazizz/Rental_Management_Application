@@ -66,15 +66,14 @@ const FiltersFull = () => {
   const handleLocationSearch = async () => {
     try {
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
           localFilters.location,
-        )}.json?access_token=${
-          process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
-        }&fuzzyMatch=true`,
+        )}`,
       );
       const data = await response.json();
-      if (data.features && data.features.length > 0) {
-        const [lng, lat] = data.features[0].center;
+      if (Array.isArray(data) && data.length > 0) {
+        const lng = Number(data[0].lon);
+        const lat = Number(data[0].lat);
         setLocalFilters((prev) => ({
           ...prev,
           coordinates: [lng, lat],
@@ -96,7 +95,7 @@ const FiltersFull = () => {
           <div className="flex items-center">
             <Input
               placeholder="Enter location"
-              value={filters.location}
+              value={localFilters.location}
               onChange={(e) =>
                 setLocalFilters((prev) => ({
                   ...prev,

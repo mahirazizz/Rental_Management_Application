@@ -1,10 +1,14 @@
+"use client";
+
 import { useGetPropertyQuery } from "@/state/api";
 import { Compass, MapPin } from "lucide-react";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
-import React, { useEffect, useRef } from "react";
+import React, { useMemo } from "react";
+import dynamic from "next/dynamic";
 
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN as string;
+const LeafletMap = dynamic(() => import("./PropertyMap"), {
+  ssr: false,
+  loading: () => <div className="h-75 bg-gray-200 rounded-lg animate-pulse" />,
+});
 
 const PropertyLocation = ({ propertyId }: PropertyDetailsProps) => {
   const {
@@ -12,38 +16,31 @@ const PropertyLocation = ({ propertyId }: PropertyDetailsProps) => {
     isError,
     isLoading,
   } = useGetPropertyQuery(propertyId);
-  const mapContainerRef = useRef(null);
-
-  useEffect(() => {
-    if (isLoading || isError || !property) return;
-
-    const map = new mapboxgl.Map({
-      container: mapContainerRef.current!,
-      style: "mapbox://styles/majesticglue/cm6u301pq008b01sl7yk1cnvb",
-      center: [
-        property.location.coordinates.longitude,
+  const center = useMemo<[number, number]>(() => {
+    if (
+      property?.location?.coordinates?.latitude !== undefined &&
+      property?.location?.coordinates?.longitude !== undefined
+    ) {
+      return [
         property.location.coordinates.latitude,
-      ],
-      zoom: 14,
-    });
-
-    const marker = new mapboxgl.Marker()
-      .setLngLat([
         property.location.coordinates.longitude,
-        property.location.coordinates.latitude,
-      ])
-      .addTo(map);
-
-    const markerElement = marker.getElement();
-    const path = markerElement.querySelector("path[fill='#3FB1CE']");
-    if (path) path.setAttribute("fill", "#000000");
-
-    return () => map.remove();
-  }, [property, isError, isLoading]);
+      ];
+    }
+    return [34.05, -118.25];
+  }, [property]);
 
   if (isLoading) return <>Loading...</>;
   if (isError || !property) {
-    return <>Property not Found</>;
+    return (
+      <div className="py-16">
+        <h3 className="text-xl font-semibold text-primary-800">
+          Map and Location
+        </h3>
+        <div className="mt-4 p-4 bg-red-100 text-red-700 rounded-lg">
+          Failed to load property details. Please try again.
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -71,10 +68,9 @@ const PropertyLocation = ({ propertyId }: PropertyDetailsProps) => {
           Get Directions
         </a>
       </div>
-      <div
-        className="relative mt-4 h-[300px] rounded-lg overflow-hidden"
-        ref={mapContainerRef}
-      />
+      <div className="relative mt-4 h-75 rounded-lg overflow-hidden">
+        <LeafletMap coordinates={center} />
+      </div>
     </div>
   );
 };
