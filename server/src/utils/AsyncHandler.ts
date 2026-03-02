@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 type AsyncRequestHandler = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => Promise<any>;
 
 const asyncHandler = (requestHandler: AsyncRequestHandler) => {
@@ -13,19 +13,3 @@ const asyncHandler = (requestHandler: AsyncRequestHandler) => {
 };
 
 export default asyncHandler;
-
-// const asyncHandler = () =>{}
-// const asyncHandler  = () = () =>{}
-// const asyncHandler  = () = {() =>{}}
-
-//different way to handle asyncHandler
-// const asyncHandler = (func = async (req, res, next) => {
-//   try {
-//     await func(req, res, next);
-//   } catch (error) {
-//     res.status(error.code || 500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// });

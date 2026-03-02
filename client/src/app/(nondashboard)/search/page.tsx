@@ -3,11 +3,11 @@
 import { NAVBAR_HEIGHT } from "@/lib/constants";
 import { useAppDispatch, useAppSelector } from "@/state/redux";
 import { useSearchParams } from "next/navigation";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import FiltersBar from "./FiltersBar";
 import FiltersFull from "./FiltersFull";
 import { cleanParams } from "@/lib/utils";
-import { setFilters } from "@/state";
+import { FiltersState, setFilters } from "@/state";
 import Map from "./Map";
 import Listings from "./Listings";
 
@@ -19,20 +19,55 @@ const SearchPage = () => {
   );
 
   useEffect(() => {
-    const initialFilters = Array.from(searchParams.entries()).reduce(
-      (acc: Record<string, any>, [key, value]) => {
-        if (key === "priceRange" || key === "squareFeet") {
-          acc[key] = value.split(",").map((v) => (v === "" ? null : Number(v)));
-        } else if (key === "coordinates") {
-          acc[key] = value.split(",").map(Number);
-        } else {
-          acc[key] = value === "any" ? null : value;
-        }
+    const filterKeys: Array<keyof FiltersState> = [
+      "location",
+      "beds",
+      "baths",
+      "propertyType",
+      "amenities",
+      "availableFrom",
+      "priceRange",
+      "squareFeet",
+      "coordinates",
+    ];
 
+    const initialFilters = Array.from(searchParams.entries()).reduce<
+      Partial<FiltersState>
+    >((acc, [key, value]) => {
+      if (!filterKeys.includes(key as keyof FiltersState)) {
         return acc;
-      },
-      {},
-    );
+      }
+
+      if (key === "priceRange" || key === "squareFeet") {
+        acc[key] = value
+          .split(",")
+          .map((v) =>
+            v === "" ? null : Number(v),
+          ) as FiltersState[typeof key];
+        return acc;
+      }
+
+      if (key === "coordinates") {
+        acc.coordinates = value
+          .split(",")
+          .map(Number) as FiltersState["coordinates"];
+        return acc;
+      }
+
+      if (key === "amenities") {
+        acc.amenities = value.split(",").filter(Boolean);
+        return acc;
+      }
+
+      acc[
+        key as Exclude<
+          keyof FiltersState,
+          "priceRange" | "squareFeet" | "coordinates" | "amenities"
+        >
+      ] = value;
+
+      return acc;
+    }, {});
 
     const cleanedFilters = cleanParams(initialFilters);
     dispatch(setFilters(cleanedFilters));

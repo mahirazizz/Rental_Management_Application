@@ -60,15 +60,24 @@ export const withToast = async <T>(
       const err = error as Record<string, unknown>;
       if (err.data !== undefined) {
         try {
-          errorMessage = String(
-            typeof err.data === "string"
-              ? err.data
-              : (err.data as Record<string, unknown>).message ||
-                  (err.data as Record<string, unknown>).error ||
-                  err.data,
-          );
+          if (typeof err.data === "string") {
+            errorMessage = err.data;
+          } else if (
+            typeof err.data === "object" &&
+            err.data !== null &&
+            ("message" in err.data || "error" in err.data)
+          ) {
+            const dataObj = err.data as Record<string, unknown>;
+            errorMessage = String(dataObj.message || dataObj.error);
+          } else {
+            errorMessage = JSON.stringify(err.data);
+          }
         } catch {
-          errorMessage = String(err);
+          try {
+            errorMessage = JSON.stringify(err);
+          } catch {
+            errorMessage = String(err);
+          }
         }
       } else if (err.message) {
         errorMessage = String(err.message);

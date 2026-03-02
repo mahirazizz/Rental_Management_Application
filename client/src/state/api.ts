@@ -184,15 +184,24 @@ export const api = createApi({
 
     addFavoriteProperty: build.mutation<
       Tenant,
-      { cognitoId: string; propertyId: number }
+      {
+        cognitoId: string;
+        propertyId: number;
+      }
     >({
       query: ({ cognitoId, propertyId }) => ({
         url: `tenants/${cognitoId}/favorites/${propertyId}`,
         method: "POST",
       }),
       invalidatesTags: (result) => [
-        { type: "Tenants", id: result?.id },
-        { type: "Properties", id: "LIST" },
+        {
+          type: "Tenants",
+          id: result?.id,
+        },
+        {
+          type: "Properties",
+          id: "LIST",
+        },
       ],
       async onQueryStarted(_, { queryFulfilled }) {
         await withToast(queryFulfilled, {
@@ -204,15 +213,24 @@ export const api = createApi({
 
     removeFavoriteProperty: build.mutation<
       Tenant,
-      { cognitoId: string; propertyId: number }
+      {
+        cognitoId: string;
+        propertyId: number;
+      }
     >({
       query: ({ cognitoId, propertyId }) => ({
         url: `tenants/${cognitoId}/favorites/${propertyId}`,
         method: "DELETE",
       }),
       invalidatesTags: (result) => [
-        { type: "Tenants", id: result?.id },
-        { type: "Properties", id: "LIST" },
+        {
+          type: "Tenants",
+          id: result?.id,
+        },
+        {
+          type: "Properties",
+          id: "LIST",
+        },
       ],
       async onQueryStarted(_, { queryFulfilled }) {
         await withToast(queryFulfilled, {
@@ -229,9 +247,17 @@ export const api = createApi({
         result
           ? [
               ...result.map(({ id }) => ({ type: "Properties" as const, id })),
-              { type: "Properties", id: "LIST" },
+              {
+                type: "Properties",
+                id: "LIST",
+              },
             ]
-          : [{ type: "Properties", id: "LIST" }],
+          : [
+              {
+                type: "Properties",
+                id: "LIST",
+              },
+            ],
       async onQueryStarted(_, { queryFulfilled }) {
         await withToast(queryFulfilled, {
           error: "Failed to load manager profile.",
@@ -241,7 +267,9 @@ export const api = createApi({
 
     updateManagerSettings: build.mutation<
       Manager,
-      { cognitoId: string } & Partial<Manager>
+      {
+        cognitoId: string;
+      } & Partial<Manager>
     >({
       query: ({ cognitoId, ...updatedManager }) => ({
         url: `managers/${cognitoId}`,
@@ -264,8 +292,14 @@ export const api = createApi({
         body: newProperty,
       }),
       invalidatesTags: (result) => [
-        { type: "Properties", id: "LIST" },
-        { type: "Managers", id: result?.manager?.id },
+        {
+          type: "Properties",
+          id: "LIST",
+        },
+        {
+          type: "Managers",
+          id: result?.manager?.id,
+        },
       ],
       async onQueryStarted(_, { queryFulfilled }) {
         await withToast(queryFulfilled, {
@@ -309,7 +343,10 @@ export const api = createApi({
     // application related endpoints
     getApplications: build.query<
       Application[],
-      { userId?: string; userType?: string }
+      {
+        userId?: string;
+        userType?: string;
+      }
     >({
       query: (params) => {
         const queryParams = new URLSearchParams();
@@ -331,13 +368,20 @@ export const api = createApi({
     }),
 
     updateApplicationStatus: build.mutation<
-      Application & { lease?: Lease },
-      { id: number; status: string }
+      Application & {
+        lease?: Lease;
+      },
+      {
+        id: number;
+        status: string;
+      }
     >({
       query: ({ id, status }) => ({
         url: `applications/${id}/status`,
         method: "PUT",
-        body: { status },
+        body: {
+          status,
+        },
       }),
       invalidatesTags: ["Applications", "Leases"],
       async onQueryStarted(_, { queryFulfilled }) {

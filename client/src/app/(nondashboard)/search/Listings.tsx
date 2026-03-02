@@ -51,6 +51,8 @@ const Listings = () => {
   };
 
   if (isLoading) return <>Loading...</>;
+  console.log(isError);
+  console.log("properties", properties)
   if (isError || !properties) return <div>Failed to fetch properties</div>;
 
   return (
