@@ -34,7 +34,9 @@ const FiltersBar = () => {
   const [searchInput, setSearchInput] = useState(filters.location);
 
   const updateURL = debounce((newFilters: FiltersState) => {
+    console.log("[FiltersBar] updateURL called with:", newFilters);
     const cleanFilters = cleanParams(newFilters);
+    console.log("[FiltersBar] cleanParams result:", cleanFilters);
     const updatedSearchParams = new URLSearchParams();
 
     Object.entries(cleanFilters).forEach(([key, value]) => {
@@ -44,7 +46,9 @@ const FiltersBar = () => {
       );
     });
 
-    router.push(`${pathname}?${updatedSearchParams.toString()}`);
+    const finalUrl = `${pathname}?${updatedSearchParams.toString()}`;
+    console.log("[FiltersBar] Pushing URL:", finalUrl);
+    router.push(finalUrl);
   });
 
   const handleFilterChange = (
@@ -68,7 +72,10 @@ const FiltersBar = () => {
     }
 
     const newFilters = { ...filters, [key]: newValue };
+    console.log("[FiltersBar] Setting filter:", key, "to", newValue);
+    console.log("[FiltersBar] New filters object:", newFilters);
     dispatch(setFilters(newFilters));
+    console.log("[FiltersBar] Calling updateURL with filters:", newFilters);
     updateURL(newFilters);
   };
 

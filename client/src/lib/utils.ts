@@ -40,6 +40,107 @@ type MutationMessages = {
   error: string;
 };
 
+const extractErrorMessage = (error: unknown): string => {
+  console.log("=== ERROR EXTRACTION STARTED ===");
+  console.log("Raw error:", error);
+  console.log("Error type:", typeof error);
+  console.log("Error instanceof Error:", error instanceof Error);
+
+  // Handle standard Error objects
+  if (error instanceof Error) {
+    console.log("Matched: Error instance");
+    return error.message;
+  }
+
+  // Handle string errors
+  if (typeof error === "string") {
+    console.log("Matched: String error");
+    return error;
+  }
+
+  // Handle objects
+  if (typeof error === "object" && error !== null) {
+    const err = error as Record<string, unknown>;
+    console.log("Error object keys:", Object.keys(err));
+    console.log("Error object:", JSON.stringify(err, null, 2));
+
+    // RTK Query specific error structure
+    if ("status" in err) {
+      console.log("Found 'status' property:", err.status);
+    }
+
+    // Check for response.data structure (RTK Query errors)
+    if (err.data !== undefined) {
+      console.log("Found 'data' property:", err.data);
+
+      if (typeof err.data === "string") {
+        console.log("Matched: err.data is string");
+        return err.data;
+      }
+
+      if (typeof err.data === "object" && err.data !== null) {
+        const dataObj = err.data as Record<string, unknown>;
+        console.log("data object keys:", Object.keys(dataObj));
+        console.log("data object:", JSON.stringify(dataObj, null, 2));
+
+        // Check for nested message properties
+        if (typeof dataObj.message === "string" && dataObj.message) {
+          console.log("Matched: dataObj.message");
+          return dataObj.message;
+        }
+        if (typeof dataObj.error === "string" && dataObj.error) {
+          console.log("Matched: dataObj.error");
+          return dataObj.error;
+        }
+        if (typeof dataObj.msg === "string" && dataObj.msg) {
+          console.log("Matched: dataObj.msg");
+          return dataObj.msg;
+        }
+        if (typeof dataObj.main === "string" && dataObj.main) {
+          console.log("Matched: dataObj.main");
+          return dataObj.main;
+        }
+      }
+    }
+
+    // Check for common error properties at top level
+    if (typeof err.message === "string" && err.message) {
+      console.log("Matched: err.message");
+      return err.message;
+    }
+    if (typeof err.error === "string" && err.error) {
+      console.log("Matched: err.error");
+      return err.error;
+    }
+    if (typeof err.msg === "string" && err.msg) {
+      console.log("Matched: err.msg");
+      return err.msg;
+    }
+
+    // Check for status code with statusText
+    if (typeof err.statusText === "string" && err.statusText) {
+      console.log("Matched: err.statusText");
+      return err.statusText;
+    }
+
+    // Check for response body
+    if (typeof err.originalStatus === "number") {
+      console.log("Found originalStatus:", err.originalStatus);
+    }
+
+    // As last resort, try to extract any string value from the object
+    for (const [key, value] of Object.entries(err)) {
+      if (typeof value === "string" && value.length > 0 && value.length < 200) {
+        console.log(`Matched: err[${key}] (fallback)`);
+        return value;
+      }
+    }
+  }
+
+  console.log("No match found, returning default");
+  return "An error occurred";
+};
+
 export const withToast = async <T>(
   mutationFn: Promise<T>,
   messages: Partial<MutationMessages>,
@@ -50,42 +151,28 @@ export const withToast = async <T>(
     const result = await mutationFn;
     if (success) toast.success(success);
     return result;
-  } catch (error) {
-    let errorMessage = messages.error || "An error occurred";
+  } catch (error: any) {
+    let errorMessage = "An error occurred";
 
-    if (error instanceof Error) {
+    // RTK Query error structure: { error: { data: { message: "..." }, status: 500 }, ... }
+    if (error?.error?.data?.message) {
+      errorMessage = error.error.data.message;
+    }
+    // Alternative structure: { status: number, data: { message: "..." } }
+    else if (error?.data?.message) {
+      errorMessage = error.data.message;
+    }
+    // String response
+    else if (typeof error?.data === "string") {
+      errorMessage = error.data;
+    }
+    // Direct message property
+    else if (error?.message) {
       errorMessage = error.message;
-    } else if (typeof error === "object" && error !== null) {
-      // Handle RTK Query errors
-      const err = error as Record<string, unknown>;
-      if (err.data !== undefined) {
-        try {
-          if (typeof err.data === "string") {
-            errorMessage = err.data;
-          } else if (
-            typeof err.data === "object" &&
-            err.data !== null &&
-            ("message" in err.data || "error" in err.data)
-          ) {
-            const dataObj = err.data as Record<string, unknown>;
-            errorMessage = String(dataObj.message || dataObj.error);
-          } else {
-            errorMessage = JSON.stringify(err.data);
-          }
-        } catch {
-          try {
-            errorMessage = JSON.stringify(err);
-          } catch {
-            errorMessage = String(err);
-          }
-        }
-      } else if (err.message) {
-        errorMessage = String(err.message);
-      } else if (err.error) {
-        errorMessage = String(err.error);
-      }
-    } else if (typeof error === "string") {
-      errorMessage = error;
+    }
+    // Fallback to provided error message
+    else if (messages.error) {
+      errorMessage = messages.error;
     }
 
     toast.error(errorMessage);

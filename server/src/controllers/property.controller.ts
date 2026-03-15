@@ -31,6 +31,9 @@ const getProperties = async (req: Request, res: Response): Promise<void> => {
 
     let whereConditions: Prisma.Sql[] = [];
 
+    // Only show active properties
+    whereConditions.push(Prisma.sql`p."isActive" = true`);
+
     if (favoriteIds) {
       const favoriteIdsArray = (favoriteIds as string).split(",").map(Number);
       whereConditions.push(
@@ -147,13 +150,50 @@ const getProperties = async (req: Request, res: Response): Promise<void> => {
       }
     `;
 
+    console.log("\n[Property Controller] GET /properties called");
+    console.log("[Property Controller] Query filters received:", {
+      favoriteIds,
+      priceMin,
+      priceMax,
+      beds,
+      baths,
+      propertyType,
+      squareFeetMin,
+      squareFeetMax,
+      amenities,
+      availableFrom,
+      latitude,
+      longitude,
+      location,
+    });
+    console.log(
+      "[Property Controller] WHERE conditions count:",
+      whereConditions.length,
+    );
+
     const properties = await prisma.$queryRaw(completeQuery);
+
+    // console.log("[Property Controller] SQL Query:", completeQuery);
+    // console.log(
+    //   "[Property Controller] Properties found:",
+    //   properties,
+    //   "properties",
+    // );
+    if (Array.isArray(properties) && properties.length > 0) {
+      console.log("[Property Controller] First property:", properties[0]);
+    }
 
     res.json(properties);
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error retrieving properties: ${error.message}` });
+    console.error("[Property Controller] ERROR - Full error object:", error);
+    console.error("[Property Controller] Error message:", error.message);
+    console.error("[Property Controller] Error stack:", error.stack);
+
+    res.status(500).json({
+      message: `Error retrieving properties: ${error.message}`,
+      error: error.message,
+      details: error.toString(),
+    });
   }
 };
 

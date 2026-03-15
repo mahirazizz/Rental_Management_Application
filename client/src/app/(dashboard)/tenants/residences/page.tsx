@@ -12,11 +12,12 @@ import React from "react";
 
 const Residences = () => {
   const { data: authUser } = useGetAuthUserQuery();
+  const isTenant = authUser?.userRole?.toLowerCase() === "tenant";
   const { data: tenant } = useGetTenantQuery(
     authUser?.cognitoInfo?.userId || "",
     {
-      skip: !authUser?.cognitoInfo?.userId,
-    }
+      skip: !authUser?.cognitoInfo?.userId || !isTenant,
+    },
   );
 
   const {
@@ -24,7 +25,7 @@ const Residences = () => {
     isLoading,
     error,
   } = useGetCurrentResidencesQuery(authUser?.cognitoInfo?.userId || "", {
-    skip: !authUser?.cognitoInfo?.userId,
+    skip: !authUser?.cognitoInfo?.userId || !isTenant,
   });
 
   if (isLoading) return <Loading />;
@@ -41,7 +42,11 @@ const Residences = () => {
           <Card
             key={property.id}
             property={property}
-            isFavorite={tenant?.favorites.includes(property.id) || false}
+            isFavorite={
+              tenant?.favorites?.some(
+                (favorite: { id: number }) => favorite.id === property.id,
+              ) || false
+            }
             onFavoriteToggle={() => {}}
             showFavoriteButton={false}
             propertyLink={`/tenants/residences/${property.id}`}

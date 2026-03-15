@@ -9,14 +9,20 @@ import React from "react";
 
 const Applications = () => {
   const { data: authUser } = useGetAuthUserQuery();
+  const isTenant = authUser?.userRole?.toLowerCase() === "tenant";
   const {
     data: applications,
     isLoading,
     isError,
-  } = useGetApplicationsQuery({
-    userId: authUser?.cognitoInfo?.userId,
-    userType: "tenant",
-  });
+  } = useGetApplicationsQuery(
+    {
+      userId: authUser?.cognitoInfo?.userId,
+      userType: "tenant",
+    },
+    {
+      skip: !authUser?.cognitoInfo?.userId || !isTenant,
+    },
+  );
 
   if (isLoading) return <Loading />;
   if (isError || !applications) return <div>Error fetching applications</div>;

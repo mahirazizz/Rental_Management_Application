@@ -32,11 +32,12 @@ const SearchMap: React.FC<SearchMapProps> = ({ properties, center }) => {
   );
 
   return (
-    <div>
+    <div className="h-full w-full">
       <MapContainer
         center={center}
         zoom={9}
         className="map-container rounded-xl h-full w-full"
+        style={{ height: "100%", width: "100%" }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

@@ -19,6 +19,8 @@ const SearchPage = () => {
   );
 
   useEffect(() => {
+    console.log("[SearchPage] useEffect triggered, searchParams:", searchParams.toString());
+    
     const filterKeys: Array<keyof FiltersState> = [
       "location",
       "beds",
@@ -31,9 +33,35 @@ const SearchPage = () => {
       "coordinates",
     ];
 
+    // Check if there are ANY search params at all
+    const hasSearchParams = searchParams.toString().length > 0;
+    console.log("[SearchPage] hasSearchParams:", hasSearchParams);
+
+    if (!hasSearchParams) {
+      // No search params - reset to defaults to show ALL properties
+      console.log("[SearchPage] No search params, showing all properties");
+      dispatch(
+        setFilters({
+          location: "",
+          beds: "any",
+          baths: "any",
+          propertyType: "any",
+          amenities: [],
+          availableFrom: "any",
+          priceRange: [null, null],
+          squareFeet: [null, null],
+          coordinates: [0, 0],
+        }),
+      );
+      return;
+    }
+
+    // Parse URL params
     const initialFilters = Array.from(searchParams.entries()).reduce<
       Partial<FiltersState>
     >((acc, [key, value]) => {
+      console.log("[SearchPage] Parsing URL param:", key, "=", value);
+      
       if (!filterKeys.includes(key as keyof FiltersState)) {
         return acc;
       }
@@ -69,9 +97,9 @@ const SearchPage = () => {
       return acc;
     }, {});
 
-    const cleanedFilters = cleanParams(initialFilters);
-    dispatch(setFilters(cleanedFilters));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    console.log("[SearchPage] Dispatching filters from URL:", initialFilters);
+    dispatch(setFilters(initialFilters));
+  }, [searchParams, dispatch]);
 
   return (
     <div

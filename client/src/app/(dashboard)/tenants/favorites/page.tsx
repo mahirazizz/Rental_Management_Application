@@ -12,10 +12,11 @@ import React from "react";
 
 const Favorites = () => {
   const { data: authUser } = useGetAuthUserQuery();
+  const isTenant = authUser?.userRole?.toLowerCase() === "tenant";
   const { data: tenant } = useGetTenantQuery(
     authUser?.cognitoInfo?.userId || "",
     {
-      skip: !authUser?.cognitoInfo?.userId,
+      skip: !authUser?.cognitoInfo?.userId || !isTenant,
     },
   );
 

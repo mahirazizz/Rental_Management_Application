@@ -1,18 +1,22 @@
+import dotenv from "dotenv";
+import path from "path";
+
+// Load environment variables FIRST, before any other imports
+dotenv.config({
+  path: path.resolve(__dirname, "../.env"),
+});
+
 import app from "./app";
 import prisma from "./db/index";
-import dotenv from "dotenv";
-
-dotenv.config({
-  path: "./.env",
-});
 
 const PORT = Number(process.env.PORT) || 3002;
 
 // Test database connection
-prisma.$connect()
+prisma
+  .$connect()
   .then(() => {
     console.log("Database connected successfully");
-    
+
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`Server running on port ${PORT}`);
     });
@@ -27,4 +31,3 @@ process.on("SIGINT", async () => {
   await prisma.$disconnect();
   process.exit(0);
 });
-

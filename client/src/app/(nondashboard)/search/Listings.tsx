@@ -13,10 +13,11 @@ import CardCompact from "@/components/CardCompact";
 
 const Listings = () => {
   const { data: authUser } = useGetAuthUserQuery();
+  const isTenant = authUser?.userRole?.toLowerCase() === "tenant";
   const { data: tenant } = useGetTenantQuery(
     authUser?.cognitoInfo?.userId || "",
     {
-      skip: !authUser?.cognitoInfo?.userId,
+      skip: !authUser?.cognitoInfo?.userId || !isTenant,
     },
   );
   const [addFavorite] = useAddFavoritePropertyMutation();
@@ -29,6 +30,10 @@ const Listings = () => {
     isLoading,
     isError,
   } = useGetPropertiesQuery(filters);
+
+  console.log("[Listings] Current filters from Redux:", filters);
+  console.log("[Listings] isLoading:", isLoading, "isError:", isError);
+  console.log("[Listings] Properties fetched:", properties?.length, "properties");
 
   const handleFavoriteToggle = async (propertyId: number) => {
     if (!authUser) return;
@@ -52,7 +57,7 @@ const Listings = () => {
 
   if (isLoading) return <>Loading...</>;
   console.log(isError);
-  console.log("properties", properties)
+  console.log("properties", properties);
   if (isError || !properties) return <div>Failed to fetch properties</div>;
 
   return (
@@ -60,7 +65,7 @@ const Listings = () => {
       <h3 className="text-sm px-4 font-bold">
         {properties.length}{" "}
         <span className="text-gray-700 font-normal">
-          Places in {filters.location}
+          Places {filters.location ? `in ${filters.location}` : "available"}
         </span>
       </h3>
       <div className="flex">
@@ -92,7 +97,7 @@ const Listings = () => {
                 showFavoriteButton={!!authUser}
                 propertyLink={`/search/${property.id}`}
               />
-            ),
+            )
           )}
         </div>
       </div>

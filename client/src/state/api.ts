@@ -91,6 +91,8 @@ export const api = createApi({
       Partial<FiltersState> & { favoriteIds?: number[] }
     >({
       query: (filters) => {
+        console.log("[RTK Query] getProperties called with filters:", filters);
+
         const params = cleanParams({
           location: filters.location,
           priceMin: filters.priceRange?.[0],
@@ -110,6 +112,12 @@ export const api = createApi({
           latitude: filters.coordinates?.[1],
           longitude: filters.coordinates?.[0],
         });
+
+        console.log("[RTK Query] After cleanParams, sending params:", params);
+        console.log(
+          "[RTK Query] API URL: /properties?",
+          new URLSearchParams(params as Record<string, string>).toString(),
+        );
 
         return { url: "properties", params };
       },
@@ -141,11 +149,6 @@ export const api = createApi({
     getTenant: build.query<Tenant, string>({
       query: (cognitoId) => `tenants/${cognitoId}`,
       providesTags: (result) => [{ type: "Tenants", id: result?.id }],
-      async onQueryStarted(_, { queryFulfilled }) {
-        await withToast(queryFulfilled, {
-          error: "Failed to load tenant profile.",
-        });
-      },
     }),
 
     getCurrentResidences: build.query<Property[], string>({
@@ -157,11 +160,6 @@ export const api = createApi({
               { type: "Properties", id: "LIST" },
             ]
           : [{ type: "Properties", id: "LIST" }],
-      async onQueryStarted(_, { queryFulfilled }) {
-        await withToast(queryFulfilled, {
-          error: "Failed to fetch current residences.",
-        });
-      },
     }),
 
     updateTenantSettings: build.mutation<
@@ -348,7 +346,7 @@ export const api = createApi({
         userType?: string;
       }
     >({
-      query: (params) => {
+      query: (params = {}) => {
         const queryParams = new URLSearchParams();
         if (params.userId) {
           queryParams.append("userId", params.userId.toString());
@@ -357,14 +355,10 @@ export const api = createApi({
           queryParams.append("userType", params.userType);
         }
 
-        return `applications?${queryParams.toString()}`;
+        const queryString = queryParams.toString();
+        return queryString ? `applications?${queryString}` : "applications";
       },
       providesTags: ["Applications"],
-      async onQueryStarted(_, { queryFulfilled }) {
-        await withToast(queryFulfilled, {
-          error: "Failed to fetch applications.",
-        });
-      },
     }),
 
     updateApplicationStatus: build.mutation<

@@ -29,7 +29,7 @@ const Map = () => {
   if (isError || !properties) return <div>Failed to fetch properties</div>;
 
   return (
-    <div className="basis-5/12 grow relative rounded-xl">
+    <div className="basis-5/12 grow relative rounded-xl h-full overflow-hidden">
       <SearchMap properties={properties || []} center={center} />
     </div>
   );
