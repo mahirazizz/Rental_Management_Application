@@ -67,6 +67,63 @@ const updateTenant = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+const deleteTenant = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { cognitoId } = req.params;
+
+    const tenant = await prisma.tenant.findUnique({
+      where: { cognitoId },
+      include: {
+        favorites: { select: { id: true } },
+        properties: { select: { id: true } },
+      },
+    });
+
+    if (!tenant) {
+      res.status(404).json({ message: "Tenant not found" });
+      return;
+    }
+
+    await prisma.$transaction(async (tx) => {
+      if (tenant.favorites.length > 0) {
+        await tx.tenant.update({
+          where: { cognitoId },
+          data: {
+            favorites: {
+              disconnect: tenant.favorites.map((property) => ({
+                id: property.id,
+              })),
+            },
+          },
+        });
+      }
+
+      if (tenant.properties.length > 0) {
+        await tx.tenant.update({
+          where: { cognitoId },
+          data: {
+            properties: {
+              disconnect: tenant.properties.map((property) => ({
+                id: property.id,
+              })),
+            },
+          },
+        });
+      }
+
+      await tx.tenant.delete({
+        where: { cognitoId },
+      });
+    });
+
+    res.json({ message: "Tenant account deleted successfully" });
+  } catch (error: any) {
+    res
+      .status(500)
+      .json({ message: `Error deleting tenant account: ${error.message}` });
+  }
+};
+
 const getCurrentResidences = async (
   req: Request,
   res: Response,
@@ -81,7 +138,7 @@ const getCurrentResidences = async (
     });
 
     const residencesWithFormattedLocation = await Promise.all(
-      properties.map(async (property: typeof properties[number]) => {
+      properties.map(async (property: (typeof properties)[number]) => {
         const coordinates: { coordinates: string }[] =
           await prisma.$queryRaw`SELECT ST_asText(coordinates) as coordinates from "Location" where id = ${property.location.id}`;
 
@@ -129,7 +186,12 @@ const addFavoriteProperty = async (
     const propertyIdNumber = Number(propertyId);
     const existingFavorites = tenant.favorites || [];
 
-    if (!existingFavorites.some((fav: typeof existingFavorites[number]) => fav.id === propertyIdNumber)) {
+    if (
+      !existingFavorites.some(
+        (fav: (typeof existingFavorites)[number]) =>
+          fav.id === propertyIdNumber,
+      )
+    ) {
       const updatedTenant = await prisma.tenant.update({
         where: { cognitoId },
         data: {
@@ -180,6 +242,7 @@ export {
   getTenant,
   createTenant,
   updateTenant,
+  deleteTenant,
   getCurrentResidences,
   addFavoriteProperty,
   removeFavoriteProperty,

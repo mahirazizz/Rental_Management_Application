@@ -19,11 +19,29 @@ const Map = () => {
   } = useGetPropertiesQuery(filters);
 
   const center = useMemo<[number, number]>(() => {
-    if (filters.coordinates?.length === 2) {
+    const hasValidFilterCoordinates =
+      filters.coordinates?.length === 2 &&
+      (filters.coordinates[0] !== 0 || filters.coordinates[1] !== 0);
+
+    if (hasValidFilterCoordinates) {
       return [filters.coordinates[1], filters.coordinates[0]];
     }
+
+    const firstPropertyWithCoordinates = properties?.find(
+      (property) =>
+        property.location?.coordinates?.latitude !== undefined &&
+        property.location?.coordinates?.longitude !== undefined,
+    );
+
+    if (firstPropertyWithCoordinates) {
+      return [
+        firstPropertyWithCoordinates.location.coordinates.latitude,
+        firstPropertyWithCoordinates.location.coordinates.longitude,
+      ];
+    }
+
     return [34.05, -118.25];
-  }, [filters.coordinates]);
+  }, [filters.coordinates, properties]);
 
   if (isLoading) return <>Loading...</>;
   if (isError || !properties) return <div>Failed to fetch properties</div>;

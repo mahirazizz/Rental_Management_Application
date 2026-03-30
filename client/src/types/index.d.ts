@@ -127,6 +127,7 @@ declare global {
   interface SettingsFormProps {
     initialData: SettingsFormData;
     onSubmit: (data: SettingsFormData) => Promise<void>;
+    onDeleteAccount: () => Promise<void>;
     userType: "manager" | "tenant";
   }
 

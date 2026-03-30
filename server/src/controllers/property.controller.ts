@@ -7,6 +7,16 @@ import { Upload } from "@aws-sdk/lib-storage";
 import axios from "axios";
 import prisma from "../db/index";
 
+const parseBooleanValue = (value: unknown): boolean => {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value === 1;
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    return ["true", "1", "on", "yes"].includes(normalized);
+  }
+  return false;
+};
+
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
 });
@@ -15,6 +25,7 @@ const getProperties = async (req: Request, res: Response): Promise<void> => {
   try {
     const {
       favoriteIds,
+      managerCognitoId,
       priceMin,
       priceMax,
       beds,
@@ -38,6 +49,12 @@ const getProperties = async (req: Request, res: Response): Promise<void> => {
       const favoriteIdsArray = (favoriteIds as string).split(",").map(Number);
       whereConditions.push(
         Prisma.sql`p.id IN (${Prisma.join(favoriteIdsArray)})`,
+      );
+    }
+
+    if (managerCognitoId) {
+      whereConditions.push(
+        Prisma.sql`p."managerCognitoId" = ${managerCognitoId}`,
       );
     }
 
@@ -153,6 +170,7 @@ const getProperties = async (req: Request, res: Response): Promise<void> => {
     console.log("\n[Property Controller] GET /properties called");
     console.log("[Property Controller] Query filters received:", {
       favoriteIds,
+      managerCognitoId,
       priceMin,
       priceMax,
       beds,
@@ -200,33 +218,43 @@ const getProperties = async (req: Request, res: Response): Promise<void> => {
 const getProperty = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
+    const propertyId = Number(id);
+
+    if (Number.isNaN(propertyId)) {
+      res.status(400).json({ message: "Invalid property id" });
+      return;
+    }
+
     const property = await prisma.property.findUnique({
-      where: { id: Number(id) },
+      where: { id: propertyId },
       include: {
         location: true,
       },
     });
 
-    if (property) {
-      const coordinates: { coordinates: string }[] =
-        await prisma.$queryRaw`SELECT ST_asText(coordinates) as coordinates from "Location" where id = ${property.location.id}`;
-
-      const geoJSON: any = wktToGeoJSON(coordinates[0]?.coordinates || "");
-      const longitude = geoJSON.coordinates[0];
-      const latitude = geoJSON.coordinates[1];
-
-      const propertyWithCoordinates = {
-        ...property,
-        location: {
-          ...property.location,
-          coordinates: {
-            longitude,
-            latitude,
-          },
-        },
-      };
-      res.json(propertyWithCoordinates);
+    if (!property) {
+      res.status(404).json({ message: "Property not found" });
+      return;
     }
+
+    const coordinates: { coordinates: string }[] =
+      await prisma.$queryRaw`SELECT ST_asText(coordinates) as coordinates from "Location" where id = ${property.location.id}`;
+
+    const geoJSON: any = wktToGeoJSON(coordinates[0]?.coordinates || "");
+    const longitude = geoJSON.coordinates[0];
+    const latitude = geoJSON.coordinates[1];
+
+    const propertyWithCoordinates = {
+      ...property,
+      location: {
+        ...property.location,
+        coordinates: {
+          longitude,
+          latitude,
+        },
+      },
+    };
+    res.json(propertyWithCoordinates);
   } catch (err: any) {
     res
       .status(500)
@@ -236,7 +264,7 @@ const getProperty = async (req: Request, res: Response): Promise<void> => {
 
 const createProperty = async (req: Request, res: Response): Promise<void> => {
   try {
-    const files = req.files as Express.Multer.File[];
+    const files = (req.files as Express.Multer.File[]) || [];
     const {
       address,
       city,
@@ -247,46 +275,64 @@ const createProperty = async (req: Request, res: Response): Promise<void> => {
       ...propertyData
     } = req.body;
 
-    const photoUrls = await Promise.all(
-      files.map(async (file) => {
-        const uploadParams = {
-          Bucket: process.env.S3_BUCKET_NAME!,
-          Key: `properties/${Date.now()}-${file.originalname}`,
-          Body: file.buffer,
-          ContentType: file.mimetype,
-        };
+    const hasS3Config =
+      !!process.env.AWS_REGION && !!process.env.S3_BUCKET_NAME;
+    const photoUrls =
+      files.length === 0
+        ? ["https://placehold.co/1200x800?text=Property+Photo"]
+        : hasS3Config
+          ? await Promise.all(
+              files.map(async (file) => {
+                const uploadParams = {
+                  Bucket: process.env.S3_BUCKET_NAME!,
+                  Key: `properties/${Date.now()}-${file.originalname}`,
+                  Body: file.buffer,
+                  ContentType: file.mimetype,
+                };
 
-        const uploadResult = await new Upload({
-          client: s3Client,
-          params: uploadParams,
-        }).done();
+                const uploadResult = await new Upload({
+                  client: s3Client,
+                  params: uploadParams,
+                }).done();
 
-        return uploadResult.Location;
-      }),
-    );
+                return uploadResult.Location;
+              }),
+            )
+          : files.map(
+              () => "https://placehold.co/1200x800?text=Property+Photo",
+            );
+
+    const geocodeQuery = [address, city, state, postalCode, country]
+      .filter(Boolean)
+      .join(", ");
 
     const geocodingUrl = `https://nominatim.openstreetmap.org/search?${new URLSearchParams(
       {
-        street: address,
-        city,
-        country,
-        postalcode: postalCode,
+        q: geocodeQuery,
         format: "json",
         limit: "1",
       },
     ).toString()}`;
-    const geocodingResponse = await axios.get(geocodingUrl, {
-      headers: {
-        "User-Agent": "RealEstateApp (justsomedummyemail@gmail.com",
-      },
-    });
-    const [longitude, latitude] =
-      geocodingResponse.data[0]?.lon && geocodingResponse.data[0]?.lat
-        ? [
-            parseFloat(geocodingResponse.data[0]?.lon),
-            parseFloat(geocodingResponse.data[0]?.lat),
-          ]
-        : [0, 0];
+
+    let longitude = 0;
+    let latitude = 0;
+    try {
+      const geocodingResponse = await axios.get(geocodingUrl, {
+        headers: {
+          "User-Agent": "RealEstateApp (justsomedummyemail@gmail.com)",
+        },
+      });
+
+      if (
+        geocodingResponse.data?.[0]?.lon &&
+        geocodingResponse.data?.[0]?.lat
+      ) {
+        longitude = parseFloat(geocodingResponse.data[0].lon);
+        latitude = parseFloat(geocodingResponse.data[0].lat);
+      }
+    } catch (geoError) {
+      console.warn("Geocoding failed, falling back to 0,0 coordinates");
+    }
 
     // create location
     const [location] = await prisma.$queryRaw<Location[]>`
@@ -310,8 +356,8 @@ const createProperty = async (req: Request, res: Response): Promise<void> => {
           typeof propertyData.highlights === "string"
             ? propertyData.highlights.split(",")
             : [],
-        isPetsAllowed: propertyData.isPetsAllowed === "true",
-        isParkingIncluded: propertyData.isParkingIncluded === "true",
+        isPetsAllowed: parseBooleanValue(propertyData.isPetsAllowed),
+        isParkingIncluded: parseBooleanValue(propertyData.isParkingIncluded),
         pricePerMonth: parseFloat(propertyData.pricePerMonth),
         securityDeposit: parseFloat(propertyData.securityDeposit),
         applicationFee: parseFloat(propertyData.applicationFee),

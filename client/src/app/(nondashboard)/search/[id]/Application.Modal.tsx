@@ -39,14 +39,20 @@ const ApplicationModal = ({
       return;
     }
 
-    await createApplication({
-      ...data,
-      applicationDate: new Date().toISOString(),
-      status: "Pending",
-      propertyId: propertyId,
-      tenantCognitoId: authUser.cognitoInfo.userId,
-    });
-    onClose();
+    try {
+      await createApplication({
+        ...data,
+        applicationDate: new Date().toISOString(),
+        status: "Pending",
+        propertyId,
+        tenantCognitoId: authUser.cognitoInfo.userId,
+      }).unwrap();
+
+      form.reset();
+      onClose();
+    } catch (error) {
+      console.error("Application submission failed", error);
+    }
   };
 
   return (

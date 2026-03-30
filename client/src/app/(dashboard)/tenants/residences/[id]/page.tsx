@@ -1,6 +1,7 @@
 "use client";
 
 import Loading from "@/components/Loading";
+import { downloadAgreementFile } from "@/lib/agreementDownload";
 import {
   Table,
   TableBody,
@@ -78,9 +79,11 @@ const PaymentMethod = () => {
 const ResidenceCard = ({
   property,
   currentLease,
+  tenantName,
 }: {
   property: Property;
   currentLease: Lease;
+  tenantName?: string;
 }) => {
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden p-6 flex-1 flex flex-col justify-between">
@@ -141,7 +144,22 @@ const ResidenceCard = ({
           <User className="w-5 h-5 mr-2" />
           Manager
         </button>
-        <button className="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-md flex items-center justify-center hover:bg-primary-700 hover:text-primary-50">
+        <button
+          className="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-md flex items-center justify-center hover:bg-primary-700 hover:text-primary-50"
+          onClick={() =>
+            downloadAgreementFile({
+              agreementId: String(currentLease.id),
+              propertyName: property.name,
+              tenantName,
+              managerName: property.manager?.name,
+              status: currentLease.isActive ? "Approved" : "Inactive",
+              startDate: currentLease.startDate,
+              endDate: currentLease.endDate,
+              monthlyRent: currentLease.rent,
+              deposit: currentLease.deposit,
+            })
+          }
+        >
           <Download className="w-5 h-5 mr-2" />
           Download Agreement
         </button>
@@ -256,7 +274,11 @@ const Residence = () => {
       <div className="w-full mx-auto">
         <div className="md:flex gap-10">
           {currentLease && (
-            <ResidenceCard property={property} currentLease={currentLease} />
+            <ResidenceCard
+              property={property}
+              currentLease={currentLease}
+              tenantName={authUser?.userInfo?.name}
+            />
           )}
           <PaymentMethod />
         </div>

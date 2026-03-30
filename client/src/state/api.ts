@@ -88,7 +88,7 @@ export const api = createApi({
     // property related endpoints
     getProperties: build.query<
       Property[],
-      Partial<FiltersState> & { favoriteIds?: number[] }
+      Partial<FiltersState> & { favoriteIds?: number[]; managerCognitoId?: string }
     >({
       query: (filters) => {
         console.log("[RTK Query] getProperties called with filters:", filters);
@@ -109,6 +109,7 @@ export const api = createApi({
           favoriteIds: Array.isArray(filters.favoriteIds)
             ? filters.favoriteIds.join(",")
             : undefined,
+          managerCognitoId: filters.managerCognitoId,
           latitude: filters.coordinates?.[1],
           longitude: filters.coordinates?.[0],
         });
@@ -176,6 +177,20 @@ export const api = createApi({
         await withToast(queryFulfilled, {
           success: "Settings updated successfully!",
           error: "Failed to update settings.",
+        });
+      },
+    }),
+
+    deleteTenantAccount: build.mutation<{ message: string }, { cognitoId: string }>({
+      query: ({ cognitoId }) => ({
+        url: `tenants/${cognitoId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: [{ type: "Tenants", id: "LIST" }],
+      async onQueryStarted(_, { queryFulfilled }) {
+        await withToast(queryFulfilled, {
+          success: "Account deleted successfully.",
+          error: "Failed to delete account.",
         });
       },
     }),
@@ -279,6 +294,23 @@ export const api = createApi({
         await withToast(queryFulfilled, {
           success: "Settings updated successfully!",
           error: "Failed to update settings.",
+        });
+      },
+    }),
+
+    deleteManagerAccount: build.mutation<
+      { message: string },
+      { cognitoId: string }
+    >({
+      query: ({ cognitoId }) => ({
+        url: `managers/${cognitoId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: [{ type: "Managers", id: "LIST" }],
+      async onQueryStarted(_, { queryFulfilled }) {
+        await withToast(queryFulfilled, {
+          success: "Account deleted successfully.",
+          error: "Failed to delete account.",
         });
       },
     }),
@@ -406,7 +438,9 @@ export const api = createApi({
 export const {
   useGetAuthUserQuery,
   useUpdateTenantSettingsMutation,
+  useDeleteTenantAccountMutation,
   useUpdateManagerSettingsMutation,
+  useDeleteManagerAccountMutation,
   useGetPropertiesQuery,
   useGetPropertyQuery,
   useGetCurrentResidencesQuery,

@@ -1,12 +1,12 @@
 "use client";
 
 import { NAVBAR_HEIGHT } from "@/lib/constants";
-import { useGetAuthUserQuery } from "@/state/api";
+import { useGetApplicationsQuery, useGetAuthUserQuery } from "@/state/api";
 import { signOut } from "aws-amplify/auth";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React from "react";
+import React, { useMemo } from "react";
 import { Bell, MessageCircle, Plus, Search } from "lucide-react";
 import { Button } from "./ui/button";
 import {
@@ -23,6 +23,47 @@ const Navbar = () => {
   const { data: authUser } = useGetAuthUserQuery();
   const router = useRouter();
   const pathname = usePathname();
+  const userRole = authUser?.userRole?.toLowerCase();
+
+  const { data: applications } = useGetApplicationsQuery(
+    {
+      userId: authUser?.cognitoInfo?.userId,
+      userType: userRole === "manager" ? "manager" : "tenant",
+    },
+    {
+      skip: !authUser?.cognitoInfo?.userId || !userRole,
+    },
+  );
+
+  const notifications = useMemo(() => {
+    if (!applications || !userRole) return [];
+
+    const sorted = [...applications].sort(
+      (a, b) =>
+        new Date(b.applicationDate).getTime() -
+        new Date(a.applicationDate).getTime(),
+    );
+
+    if (userRole === "manager") {
+      return sorted
+        .filter((application) => application.status === "Pending")
+        .map((application) => ({
+          id: application.id,
+          title: "New Application",
+          description: `${application.tenant?.name || "A tenant"} applied for ${application.property?.name || "your property"}`,
+          href: "/managers/applications",
+        }));
+    }
+
+    return sorted
+      .filter((application) => application.status !== "Pending")
+      .map((application) => ({
+        id: application.id,
+        title: "Application Update",
+        description: `${application.property?.name || "Property"}: ${application.status}`,
+        href: "/tenants/applications",
+      }));
+  }, [applications, userRole]);
 
   const isDashboardPage =
     pathname.includes("/managers") || pathname.includes("/tenants");
@@ -101,14 +142,57 @@ const Navbar = () => {
         <div className="flex items-center gap-5">
           {authUser ? (
             <>
-              <div className="relative hidden md:block">
-                <MessageCircle className="w-6 h-6 cursor-pointer text-primary-200 hover:text-primary-400" />
-                <span className="absolute top-0 right-0 w-2 h-2 bg-secondary-700 rounded-full"></span>
-              </div>
-              <div className="relative hidden md:block">
-                <Bell className="w-6 h-6 cursor-pointer text-primary-200 hover:text-primary-400" />
-                <span className="absolute top-0 right-0 w-2 h-2 bg-secondary-700 rounded-full"></span>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="relative hidden md:block focus:outline-none">
+                  <MessageCircle className="w-6 h-6 cursor-pointer text-primary-200 hover:text-primary-400" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-white text-primary-700 w-80 p-2">
+                  <div className="px-2 py-1 text-sm font-semibold text-primary-700">
+                    Messages
+                  </div>
+                  <DropdownMenuSeparator className="bg-primary-200" />
+                  <div className="px-2 py-6 text-sm text-primary-500 text-center">
+                    No messages
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger className="relative hidden md:block focus:outline-none">
+                  <Bell className="w-6 h-6 cursor-pointer text-primary-200 hover:text-primary-400" />
+                  {notifications.length > 0 && (
+                    <span className="absolute top-0 right-0 w-2 h-2 bg-secondary-700 rounded-full"></span>
+                  )}
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-white text-primary-700 w-90 p-2">
+                  <div className="px-2 py-1 text-sm font-semibold text-primary-700">
+                    Notifications
+                  </div>
+                  <DropdownMenuSeparator className="bg-primary-200" />
+                  {notifications.length === 0 ? (
+                    <div className="px-2 py-6 text-sm text-primary-500 text-center">
+                      No notifications
+                    </div>
+                  ) : (
+                    notifications.slice(0, 6).map((notification) => (
+                      <DropdownMenuItem
+                        key={notification.id}
+                        className="cursor-pointer py-3 px-2 hover:bg-primary-100!"
+                        onClick={() => router.push(notification.href, { scroll: false })}
+                      >
+                        <div className="flex flex-col gap-1">
+                          <span className="text-sm font-semibold text-primary-800">
+                            {notification.title}
+                          </span>
+                          <span className="text-xs text-primary-600">
+                            {notification.description}
+                          </span>
+                        </div>
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex items-center gap-2 focus:outline-none">

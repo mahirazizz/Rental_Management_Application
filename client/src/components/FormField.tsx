@@ -46,6 +46,7 @@ interface FormFieldProps {
     | "number"
     | "select"
     | "switch"
+    | "boolean-segmented"
     | "password"
     | "file"
     | "multi-input";
@@ -100,16 +101,16 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
             onValueChange={field.onChange}
           >
             <SelectTrigger
-              className={`w-full border-gray-200 p-4 ${inputClassName}`}
+              className={`w-full h-11 border-primary-300 bg-white px-3 shadow-sm transition-colors focus:border-primary-500 focus:ring-2 focus:ring-primary-200 ${inputClassName}`}
             >
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
-            <SelectContent className="w-full border-gray-200 shadow">
+            <SelectContent className="z-70 max-h-72 w-full border border-primary-300 bg-white text-primary-800 shadow-xl">
               {options?.map((option) => (
                 <SelectItem
                   key={option.value}
                   value={option.value}
-                  className={`cursor-pointer hover:bg-gray-100! hover:text-customgreys-darkGrey!`}
+                  className="cursor-pointer rounded-md px-2 py-2 text-sm font-medium text-primary-700 hover:bg-primary-100 focus:bg-primary-100 focus:text-primary-900"
                 >
                   {option.label}
                 </SelectItem>
@@ -119,16 +120,61 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
         );
       case "switch":
         return (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-between rounded-lg border border-primary-200 bg-primary-50 px-3 py-2">
+            <div className="flex flex-col">
+              <FormLabel htmlFor={name} className={`text-sm ${labelClassName}`}>
+                {label}
+              </FormLabel>
+              <span
+                className={`text-xs font-semibold ${
+                  Boolean(field.value) ? "text-green-700" : "text-gray-500"
+                }`}
+              >
+                {Boolean(field.value) ? "ON" : "OFF"}
+              </span>
+            </div>
             <Switch
-              checked={field.value}
-              onCheckedChange={field.onChange}
+              checked={Boolean(field.value)}
+              onCheckedChange={(checked) => field.onChange(checked)}
               id={name}
-              className={`text-customgreys-dirtyGrey ${inputClassName}`}
+              className={`data-[state=checked]:bg-green-600 data-[state=unchecked]:bg-gray-300 ${inputClassName}`}
             />
-            <FormLabel htmlFor={name} className={labelClassName}>
-              {label}
-            </FormLabel>
+          </div>
+        );
+      case "boolean-segmented":
+        return (
+          <div className="space-y-2">
+            <div className="inline-flex w-full rounded-lg border border-primary-300 bg-white p-1">
+              <Button
+                type="button"
+                onClick={() => field.onChange(true)}
+                className={`h-9 flex-1 rounded-md text-sm font-medium transition-colors ${
+                  Boolean(field.value)
+                    ? "bg-green-600 text-white hover:bg-green-700"
+                    : "bg-transparent text-primary-700 hover:bg-primary-100"
+                }`}
+              >
+                Yes
+              </Button>
+              <Button
+                type="button"
+                onClick={() => field.onChange(false)}
+                className={`h-9 flex-1 rounded-md text-sm font-medium transition-colors ${
+                  !Boolean(field.value)
+                    ? "bg-red-600 text-white hover:bg-red-700"
+                    : "bg-transparent text-primary-700 hover:bg-primary-100"
+                }`}
+              >
+                No
+              </Button>
+            </div>
+            <p
+              className={`text-xs font-semibold ${
+                Boolean(field.value) ? "text-green-700" : "text-red-700"
+              }`}
+            >
+              {Boolean(field.value) ? "Selected: Yes" : "Selected: No"}
+            </p>
           </div>
         );
       case "file":

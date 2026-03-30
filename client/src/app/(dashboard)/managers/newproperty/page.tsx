@@ -3,6 +3,7 @@
 import { CustomFormField } from "@/components/FormField";
 import Header from "@/components/Header";
 import { Form } from "@/components/ui/form";
+import { formatEnumString } from "@/lib/utils";
 import { PropertyFormData, propertySchema } from "@/lib/schemas";
 import { useCreatePropertyMutation, useGetAuthUserQuery } from "@/state/api";
 import { AmenityEnum, HighlightEnum, PropertyTypeEnum } from "@/lib/constants";
@@ -138,12 +139,12 @@ const NewProperty = () => {
                 <CustomFormField
                   name="isPetsAllowed"
                   label="Pets Allowed"
-                  type="switch"
+                  type="boolean-segmented"
                 />
                 <CustomFormField
                   name="isParkingIncluded"
                   label="Parking Included"
-                  type="switch"
+                  type="boolean-segmented"
                 />
               </div>
               <div className="mt-4">
@@ -151,9 +152,10 @@ const NewProperty = () => {
                   name="propertyType"
                   label="Property Type"
                   type="select"
+                  placeholder="Select property type"
                   options={Object.keys(PropertyTypeEnum).map((type) => ({
                     value: type,
-                    label: type,
+                    label: formatEnumString(type),
                   }))}
                 />
               </div>
@@ -171,18 +173,20 @@ const NewProperty = () => {
                   name="amenities"
                   label="Amenities"
                   type="select"
+                  placeholder="Select an amenity"
                   options={Object.keys(AmenityEnum).map((amenity) => ({
                     value: amenity,
-                    label: amenity,
+                    label: formatEnumString(amenity),
                   }))}
                 />
                 <CustomFormField
                   name="highlights"
                   label="Highlights"
                   type="select"
+                  placeholder="Select a highlight"
                   options={Object.keys(HighlightEnum).map((highlight) => ({
                     value: highlight,
-                    label: highlight,
+                    label: formatEnumString(highlight),
                   }))}
                 />
               </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import Card from "@/components/Card";
+import DashboardPropertyFilters from "@/components/DashboardPropertyFilters";
 import Header from "@/components/Header";
 import Loading from "@/components/Loading";
 import {
@@ -8,10 +9,12 @@ import {
   useGetPropertiesQuery,
   useGetTenantQuery,
 } from "@/state/api";
+import { useAppSelector } from "@/state/redux";
 import React from "react";
 
 const Favorites = () => {
   const { data: authUser } = useGetAuthUserQuery();
+  const filters = useAppSelector((state) => state.global.filters);
   const isTenant = authUser?.userRole?.toLowerCase() === "tenant";
   const { data: tenant } = useGetTenantQuery(
     authUser?.cognitoInfo?.userId || "",
@@ -25,7 +28,10 @@ const Favorites = () => {
     isLoading,
     error,
   } = useGetPropertiesQuery(
-    { favoriteIds: tenant?.favorites?.map((fav: { id: number }) => fav.id) },
+    {
+      ...filters,
+      favoriteIds: tenant?.favorites?.map((fav: { id: number }) => fav.id),
+    },
     { skip: !tenant?.favorites || tenant?.favorites.length === 0 },
   );
 
@@ -38,6 +44,7 @@ const Favorites = () => {
         title="Favorited Properties"
         subtitle="Browse and manage your saved property listings"
       />
+      <DashboardPropertyFilters />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {favoriteProperties?.map((property) => (
           <Card
@@ -46,7 +53,7 @@ const Favorites = () => {
             isFavorite={true}
             onFavoriteToggle={() => {}}
             showFavoriteButton={false}
-            propertyLink={`/tenants/residences/${property.id}`}
+            propertyLink={`/search/${property.id}`}
           />
         ))}
       </div>

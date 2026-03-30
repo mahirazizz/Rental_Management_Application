@@ -2,14 +2,19 @@
 
 import SettingsForm from "@/components/SettingForm";
 import {
+  useDeleteTenantAccountMutation,
   useGetAuthUserQuery,
   useUpdateTenantSettingsMutation,
 } from "@/state/api";
+import { signOut } from "aws-amplify/auth";
+import { useRouter } from "next/navigation";
 import React, { useMemo } from "react";
 
 const TenantSettings = () => {
   const { data: authUser, isLoading } = useGetAuthUserQuery();
   const [updateTenant] = useUpdateTenantSettingsMutation();
+  const [deleteTenantAccount] = useDeleteTenantAccountMutation();
+  const router = useRouter();
 
   const initialData = useMemo(
     () => ({
@@ -33,10 +38,19 @@ const TenantSettings = () => {
     });
   };
 
+  const handleDeleteAccount = async () => {
+    await deleteTenantAccount({
+      cognitoId: authUser.cognitoInfo.userId,
+    }).unwrap();
+    await signOut();
+    router.replace("/signin");
+  };
+
   return (
     <SettingsForm
       initialData={initialData}
       onSubmit={handleSubmit}
+      onDeleteAccount={handleDeleteAccount}
       userType="tenant"
     />
   );

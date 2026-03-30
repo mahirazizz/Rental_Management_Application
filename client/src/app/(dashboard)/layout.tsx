@@ -6,17 +6,98 @@ import Sidebar from "@/components/AppSidebar";
 import { NAVBAR_HEIGHT } from "@/lib/constants";
 import React, { useEffect, useState } from "react";
 import { useGetAuthUserQuery } from "@/state/api";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { FiltersState, setFilters } from "@/state";
+import { useAppDispatch } from "@/state/redux";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const { data: authUser, isLoading: authLoading } = useGetAuthUserQuery();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(true);
+  const userRole = authUser?.userRole?.toLowerCase();
+  const sidebarUserType: AppSidebarProps["userType"] | null =
+    userRole === "manager"
+      ? "manager"
+      : userRole === "tenant"
+        ? "tenant"
+        : null;
+
+  useEffect(() => {
+    const filterKeys: Array<keyof FiltersState> = [
+      "location",
+      "beds",
+      "baths",
+      "propertyType",
+      "amenities",
+      "availableFrom",
+      "priceRange",
+      "squareFeet",
+      "coordinates",
+    ];
+
+    if (!searchParams.toString()) {
+      dispatch(
+        setFilters({
+          location: "",
+          beds: "any",
+          baths: "any",
+          propertyType: "any",
+          amenities: [],
+          availableFrom: "any",
+          priceRange: [null, null],
+          squareFeet: [null, null],
+          coordinates: [0, 0],
+        }),
+      );
+      return;
+    }
+
+    const parsedFilters = Array.from(searchParams.entries()).reduce<
+      Partial<FiltersState>
+    >((acc, [key, value]) => {
+      if (!filterKeys.includes(key as keyof FiltersState)) {
+        return acc;
+      }
+
+      if (key === "priceRange" || key === "squareFeet") {
+        acc[key] = value
+          .split(",")
+          .map((v) =>
+            v === "" ? null : Number(v),
+          ) as FiltersState[typeof key];
+        return acc;
+      }
+
+      if (key === "coordinates") {
+        acc.coordinates = value
+          .split(",")
+          .map(Number) as FiltersState["coordinates"];
+        return acc;
+      }
+
+      if (key === "amenities") {
+        acc.amenities = value.split(",").filter(Boolean);
+        return acc;
+      }
+
+      acc[
+        key as Exclude<
+          keyof FiltersState,
+          "priceRange" | "squareFeet" | "coordinates" | "amenities"
+        >
+      ] = value;
+
+      return acc;
+    }, {});
+
+    dispatch(setFilters(parsedFilters));
+  }, [searchParams, dispatch]);
 
   useEffect(() => {
     if (authUser) {
-      const userRole = authUser.userRole?.toLowerCase();
       if (
         (userRole === "manager" && pathname.startsWith("/tenants")) ||
         (userRole === "tenant" && pathname.startsWith("/managers"))
@@ -31,10 +112,10 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         setIsLoading(false);
       }
     }
-  }, [authUser, router, pathname]);
+  }, [authUser, router, pathname, userRole]);
 
   if (authLoading || isLoading) return <>Loading...</>;
-  if (!authUser?.userRole) return null;
+  if (!authUser?.userRole || !sidebarUserType) return null;
 
   return (
     <SidebarProvider>
@@ -42,7 +123,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         <Navbar />
         <div style={{ marginTop: `${NAVBAR_HEIGHT}px` }}>
           <main className="flex">
-            <Sidebar userType={authUser.userRole.toLowerCase()} />
+            <Sidebar userType={sidebarUserType} />
             <div className="grow transition-all duration-300">{children}</div>
           </main>
         </div>

@@ -3,6 +3,7 @@
 import { ApplicationCard } from "@/components/ApplicationCard";
 import Header from "@/components/Header";
 import Loading from "@/components/Loading";
+import { downloadAgreementFile } from "@/lib/agreementDownload";
 import { useGetApplicationsQuery, useGetAuthUserQuery } from "@/state/api";
 import { CircleCheckBig, Clock, Download, XCircle } from "lucide-react";
 import React from "react";
@@ -62,6 +63,20 @@ const Applications = () => {
               <button
                 className={`bg-white border border-gray-300 text-gray-700 py-2 px-4
                           rounded-md flex items-center justify-center hover:bg-primary-700 hover:text-primary-50`}
+                onClick={() =>
+                  downloadAgreementFile({
+                    agreementId: String(application.id),
+                    propertyName: application.property?.name,
+                    tenantName: authUser?.userInfo?.name,
+                    tenantEmail: authUser?.userInfo?.email,
+                    managerName: application.manager?.name,
+                    status: application.status,
+                    startDate: application.lease?.startDate,
+                    endDate: application.lease?.endDate,
+                    monthlyRent: application.lease?.rent,
+                    deposit: application.lease?.deposit,
+                  })
+                }
               >
                 <Download className="w-5 h-5 mr-2" />
                 Download Agreement

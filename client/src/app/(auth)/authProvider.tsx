@@ -40,9 +40,17 @@ const components = {
   },
   SignIn: {
     Footer() {
-      const { toSignUp } = useAuthenticator();
+      const { toSignUp, toForgotPassword } = useAuthenticator();
       return (
         <View className="text-center mt-4">
+          <p className="mb-3">
+            <button
+              className="text-primary-500 hover:underline font-medium bg-transparent border-0 p-0 cursor-pointer"
+              onClick={toForgotPassword}
+            >
+              Forgot Password?
+            </button>
+          </p>
           <p className="text-muted-foreground">
             Don&apos;t have an account?{" "}
             <button
@@ -71,7 +79,7 @@ const components = {
             isRequired
           >
             <Radio value="tenant">Renter</Radio>
-            <Radio value="landlord">Property Owner</Radio>
+            <Radio value="manager">Property Owner</Radio>
           </RadioGroupField>
         </>
       );
@@ -135,6 +143,27 @@ const formFields = {
       isRequired: true,
     },
   },
+
+  forgotPassword: {
+    username: {
+      placeholder: "Enter your email or username",
+      label: "Email or Username",
+      isRequired: true,
+    },
+  },
+
+  confirmResetPassword: {
+    confirmation_code: {
+      placeholder: "Enter verification code",
+      label: "Verification Code",
+      isRequired: true,
+    },
+    password: {
+      placeholder: "Enter new password",
+      label: "New Password",
+      isRequired: true,
+    },
+  },
 };
 
 const Auth = ({ children }: { children: React.ReactNode }) => {
@@ -144,7 +173,7 @@ const Auth = ({ children }: { children: React.ReactNode }) => {
 
   const isAuthPage = pathname.match(/^\/(signin|signup)$/);
   const isDashboardPage =
-    pathname.startsWith("/landlord") || pathname.startsWith("/tenant");
+    pathname.startsWith("/managers") || pathname.startsWith("/tenants");
 
   // Redirect authenticated users away from auth pages
   useEffect(() => {

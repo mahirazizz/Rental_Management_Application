@@ -68,6 +68,42 @@ const updateManager = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+const deleteManager = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { cognitoId } = req.params;
+
+    const manager = await prisma.manager.findUnique({
+      where: { cognitoId },
+      include: {
+        managedProperties: { select: { id: true } },
+      },
+    });
+
+    if (!manager) {
+      res.status(404).json({ message: "Manager not found" });
+      return;
+    }
+
+    if (manager.managedProperties.length > 0) {
+      res.status(400).json({
+        message:
+          "Cannot delete manager account while properties are still assigned. Remove or transfer properties first.",
+      });
+      return;
+    }
+
+    await prisma.manager.delete({
+      where: { cognitoId },
+    });
+
+    res.json({ message: "Manager account deleted successfully" });
+  } catch (error: any) {
+    res
+      .status(500)
+      .json({ message: `Error deleting manager: ${error.message}` });
+  }
+};
+
 const getManagerProperties = async (
   req: Request,
   res: Response,
@@ -113,4 +149,10 @@ const getManagerProperties = async (
   }
 };
 
-export { getManager, createManager, updateManager, getManagerProperties };
+export {
+  getManager,
+  createManager,
+  updateManager,
+  deleteManager,
+  getManagerProperties,
+};

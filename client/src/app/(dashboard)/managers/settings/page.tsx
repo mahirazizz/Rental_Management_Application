@@ -2,14 +2,19 @@
 
 import SettingsForm from "@/components/SettingForm";
 import {
+  useDeleteManagerAccountMutation,
   useGetAuthUserQuery,
   useUpdateManagerSettingsMutation,
 } from "@/state/api";
+import { signOut } from "aws-amplify/auth";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 const ManagerSettings = () => {
   const { data: authUser, isLoading } = useGetAuthUserQuery();
   const [updateManager] = useUpdateManagerSettingsMutation();
+  const [deleteManagerAccount] = useDeleteManagerAccountMutation();
+  const router = useRouter();
 
   if (isLoading) return <>Loading...</>;
 
@@ -26,10 +31,19 @@ const ManagerSettings = () => {
     });
   };
 
+  const handleDeleteAccount = async () => {
+    await deleteManagerAccount({
+      cognitoId: authUser!.cognitoInfo.userId,
+    }).unwrap();
+    await signOut();
+    router.replace("/signin");
+  };
+
   return (
     <SettingsForm
       initialData={initialData}
       onSubmit={handleSubmit}
+      onDeleteAccount={handleDeleteAccount}
       userType="manager"
     />
   );
