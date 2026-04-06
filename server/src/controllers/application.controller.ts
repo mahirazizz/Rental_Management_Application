@@ -72,7 +72,15 @@ const listApplications = async (
       typeof userId === "string" ? userId : undefined,
     );
 
-    if (!resolvedRole || possibleUserIds.length === 0) {
+    if (!resolvedRole) {
+      res.status(400).json({
+        message:
+          "Unable to resolve user identity for application filtering. Please sign in again.",
+      });
+      return;
+    }
+
+    if (possibleUserIds.length === 0) {
       res.status(400).json({
         message:
           "Unable to resolve user identity for application filtering. Please sign in again.",
@@ -87,7 +95,13 @@ const listApplications = async (
               in: possibleUserIds,
             },
           }
-        : {};
+        : {
+            property: {
+              managerCognitoId: {
+                in: possibleUserIds,
+              },
+            },
+          };
 
     const applications = await prisma.application.findMany({
       where: whereClause,
