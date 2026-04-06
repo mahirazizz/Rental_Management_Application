@@ -92,11 +92,9 @@ const geocodeCoordinates = async (
   }
 
   try {
-    const fallbackUrl = `https://geocode.maps.co/search?${new URLSearchParams(
-      {
-        q: geocodeQuery,
-      },
-    ).toString()}`;
+    const fallbackUrl = `https://geocode.maps.co/search?${new URLSearchParams({
+      q: geocodeQuery,
+    }).toString()}`;
 
     const fallbackResponse = await axios.get(fallbackUrl, {
       timeout: 10000,

@@ -11,9 +11,9 @@ const getLeases = async (req: Request, res: Response): Promise<void> => {
     });
     res.json(leases);
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error retrieving leases: ${error.message}` });
+    res.status(500).json({
+      message: `Error retrieving leases: ${error.message}`,
+    });
   }
 };
 
@@ -27,9 +27,9 @@ const getLeasePayments = async (req: Request, res: Response): Promise<void> => {
     });
     res.json(payments);
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error retrieving lease payments: ${error.message}` });
+    res.status(500).json({
+      message: `Error retrieving lease payments: ${error.message}`,
+    });
   }
 };
 

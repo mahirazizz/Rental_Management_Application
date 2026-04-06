@@ -35,14 +35,15 @@ const resolveUserRole = (
   userTypeFromQuery?: string,
 ): "manager" | "tenant" | null => {
   const tokenUser = req.user ?? {};
-  const tokenRole =
-    (typeof tokenUser["custom:role"] === "string"
+  const tokenRole = (
+    typeof tokenUser["custom:role"] === "string"
       ? tokenUser["custom:role"]
       : typeof tokenUser.role === "string"
         ? tokenUser.role
-        : "")
-      .toLowerCase()
-      .trim();
+        : ""
+  )
+    .toLowerCase()
+    .trim();
 
   if (tokenRole === "manager" || tokenRole === "tenant") {
     return tokenRole;
@@ -252,9 +253,9 @@ const createApplication = async (
 
     res.status(201).json(newApplication);
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error creating application: ${error.message}` });
+    res.status(500).json({
+      message: `Error creating application: ${error.message}`,
+    });
   }
 };
 
@@ -349,9 +350,9 @@ const updateApplicationStatus = async (
 
     res.json(updatedApplication);
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error updating application status: ${error.message}` });
+    res.status(500).json({
+      message: `Error updating application status: ${error.message}`,
+    });
   }
 };
 

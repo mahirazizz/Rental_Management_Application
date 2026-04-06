@@ -18,9 +18,9 @@ const getTenant = async (req: Request, res: Response): Promise<void> => {
       res.status(404).json({ message: "Tenant not found" });
     }
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error retrieving tenant: ${error.message}` });
+    res.status(500).json({
+      message: `Error retrieving tenant: ${error.message}`,
+    });
   }
 };
 
@@ -39,9 +39,9 @@ const createTenant = async (req: Request, res: Response): Promise<void> => {
 
     res.status(201).json(tenant);
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error creating tenant: ${error.message}` });
+    res.status(500).json({
+      message: `Error creating tenant: ${error.message}`,
+    });
   }
 };
 
@@ -61,9 +61,9 @@ const updateTenant = async (req: Request, res: Response): Promise<void> => {
 
     res.json(updateTenant);
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error updating tenant: ${error.message}` });
+    res.status(500).json({
+      message: `Error updating tenant: ${error.message}`,
+    });
   }
 };
 
@@ -161,9 +161,9 @@ const getCurrentResidences = async (
 
     res.json(residencesWithFormattedLocation);
   } catch (err: any) {
-    res
-      .status(500)
-      .json({ message: `Error retrieving manager properties: ${err.message}` });
+    res.status(500).json({
+      message: `Error retrieving manager properties: ${err.message}`,
+    });
   }
 };
 
@@ -206,9 +206,9 @@ const addFavoriteProperty = async (
       res.status(409).json({ message: "Property already added as favorite" });
     }
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error adding favorite property: ${error.message}` });
+    res.status(500).json({
+      message: `Error adding favorite property: ${error.message}`,
+    });
   }
 };
 
@@ -232,9 +232,9 @@ const removeFavoriteProperty = async (
 
     res.json(updatedTenant);
   } catch (err: any) {
-    res
-      .status(500)
-      .json({ message: `Error removing favorite property: ${err.message}` });
+    res.status(500).json({
+      message: `Error removing favorite property: ${err.message}`,
+    });
   }
 };
 

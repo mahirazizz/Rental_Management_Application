@@ -17,9 +17,9 @@ const getManager = async (req: Request, res: Response): Promise<void> => {
       res.status(404).json({ message: "Manager not found" });
     }
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error retrieving manager: ${error.message}` });
+    res.status(500).json({
+      message: `Error retrieving manager: ${error.message}`,
+    });
   }
 };
 
@@ -38,9 +38,9 @@ const createManager = async (req: Request, res: Response): Promise<void> => {
 
     res.status(201).json(manager);
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error creating manager: ${error.message}` });
+    res.status(500).json({
+      message: `Error creating manager: ${error.message}`,
+    });
   }
 };
 
@@ -62,9 +62,9 @@ const updateManager = async (req: Request, res: Response): Promise<void> => {
 
     res.json(updateManager);
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error updating manager: ${error.message}` });
+    res.status(500).json({
+      message: `Error updating manager: ${error.message}`,
+    });
   }
 };
 
@@ -143,9 +143,9 @@ const getManagerProperties = async (
 
     res.json(propertiesWithFormattedLocation);
   } catch (err: any) {
-    res
-      .status(500)
-      .json({ message: `Error retrieving manager properties: ${err.message}` });
+    res.status(500).json({
+      message: `Error retrieving manager properties: ${err.message}`,
+    });
   }
 };
 
