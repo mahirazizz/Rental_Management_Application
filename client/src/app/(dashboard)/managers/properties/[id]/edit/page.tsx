@@ -2,25 +2,42 @@
 
 import { CustomFormField } from "@/components/FormField";
 import Header from "@/components/Header";
-import { Form } from "@/components/ui/form";
-import { formatEnumString } from "@/lib/utils";
-import { propertySchema } from "@/lib/schemas";
-import { useCreatePropertyMutation, useGetAuthUserQuery } from "@/state/api";
-import { AmenityEnum, HighlightEnum, PropertyTypeEnum } from "@/lib/constants";
-import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
-import { useForm } from "react-hook-form";
+import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { propertyEditSchema } from "@/lib/schemas";
+import { formatEnumString } from "@/lib/utils";
+import { AmenityEnum, HighlightEnum, PropertyTypeEnum } from "@/lib/constants";
+import {
+  useGetAuthUserQuery,
+  useGetPropertyQuery,
+  useUpdatePropertyMutation,
+} from "@/state/api";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { ArrowLeft } from "lucide-react";
 
-const NewProperty = () => {
-  const [createProperty] = useCreatePropertyMutation();
+const EditProperty = () => {
+  const router = useRouter();
+  const { id } = useParams();
+  const propertyId = Number(id);
+
   const { data: authUser } = useGetAuthUserQuery();
+  const { data: property, isLoading: propertyLoading } =
+    useGetPropertyQuery(propertyId, {
+      skip: Number.isNaN(propertyId),
+    });
+  const [updateProperty, { isLoading: isUpdating }] =
+    useUpdatePropertyMutation();
 
-  type PropertyFormInput = z.input<typeof propertySchema>;
+  type PropertyEditFormInput = z.input<typeof propertyEditSchema>;
 
-  const form = useForm<PropertyFormInput>({
-    resolver: zodResolver(propertySchema),
+  const form = useForm<PropertyEditFormInput>({
+    resolver: zodResolver(propertyEditSchema),
     defaultValues: {
       name: "",
       description: "",
@@ -35,6 +52,7 @@ const NewProperty = () => {
       beds: 1,
       baths: 1,
       squareFeet: 1000,
+      propertyType: PropertyTypeEnum.Apartment,
       address: "",
       city: "",
       state: "",
@@ -45,45 +63,85 @@ const NewProperty = () => {
     },
   });
 
-  const onSubmit = async (data: PropertyFormInput) => {
-    if (!authUser?.cognitoInfo?.userId) {
+  useEffect(() => {
+    if (!property) return;
+
+    form.reset({
+      name: property.name,
+      description: property.description,
+      pricePerMonth: property.pricePerMonth,
+      securityDeposit: property.securityDeposit,
+      applicationFee: property.applicationFee,
+      isPetsAllowed: property.isPetsAllowed,
+      isParkingIncluded: property.isParkingIncluded,
+      photoUrls: [],
+      amenities: property.amenities?.[0] ?? "",
+      highlights: property.highlights?.[0] ?? "",
+      beds: property.beds,
+      baths: property.baths,
+      squareFeet: property.squareFeet,
+      propertyType: property.propertyType,
+      address: property.location?.address ?? "",
+      city: property.location?.city ?? "",
+      state: property.location?.state ?? "",
+      country: property.location?.country ?? "",
+      postalCode: property.location?.postalCode ?? "",
+      latitude: property.location?.coordinates?.latitude ?? "",
+      longitude: property.location?.coordinates?.longitude ?? "",
+    });
+  }, [form, property]);
+
+  const onSubmit = async (data: PropertyEditFormInput) => {
+    const managerId = authUser?.cognitoInfo?.userId;
+    if (!managerId) {
       throw new Error("No manager ID found");
     }
 
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
       if (key === "photoUrls") {
-        const files = value as File[];
+        const files = (value as File[] | undefined) ?? [];
         files.forEach((file: File) => {
           formData.append("photos", file);
         });
-      } else if (value === undefined || value === null || value === "") {
-        return;
-      } else if (Array.isArray(value)) {
-        formData.append(key, JSON.stringify(value));
-      } else {
+      } else if (value !== undefined && value !== null && value !== "") {
         formData.append(key, String(value));
       }
     });
 
-    formData.append("managerCognitoId", authUser.cognitoInfo.userId);
+    formData.append("managerCognitoId", managerId);
 
-    await createProperty(formData);
+    await updateProperty({ id: propertyId, propertyData: formData });
+    router.push(`/managers/properties/${propertyId}`);
   };
+
+  if (propertyLoading) return <Loading />;
+  if (!property) {
+    return <div className="dashboard-container">Property not found</div>;
+  }
 
   return (
     <div className="dashboard-container">
+      <Link
+        href={`/managers/properties/${propertyId}`}
+        className="flex items-center mb-4 hover:text-primary-500"
+        scroll={false}
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        <span>Back to Property</span>
+      </Link>
+
       <Header
-        title="Add New Property"
-        subtitle="Create a new property listing with detailed information"
+        title="Edit Property"
+        subtitle="Update listing details for your property"
       />
+
       <div className="bg-white rounded-xl p-6">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="p-4 space-y-10"
           >
-            {/* Basic Information */}
             <div>
               <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
               <div className="space-y-4">
@@ -98,7 +156,6 @@ const NewProperty = () => {
 
             <hr className="my-6 border-gray-200" />
 
-            {/* Fees */}
             <div className="space-y-6">
               <h2 className="text-lg font-semibold mb-4">Fees</h2>
               <CustomFormField
@@ -122,7 +179,6 @@ const NewProperty = () => {
 
             <hr className="my-6 border-gray-200" />
 
-            {/* Property Details */}
             <div className="space-y-6">
               <h2 className="text-lg font-semibold mb-4">Property Details</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -170,7 +226,6 @@ const NewProperty = () => {
 
             <hr className="my-6 border-gray-200" />
 
-            {/* Amenities and Highlights */}
             <div>
               <h2 className="text-lg font-semibold mb-4">
                 Amenities and Highlights
@@ -201,12 +256,11 @@ const NewProperty = () => {
 
             <hr className="my-6 border-gray-200" />
 
-            {/* Photos */}
             <div>
-              <h2 className="text-lg font-semibold mb-4">Photos</h2>
+              <h2 className="text-lg font-semibold mb-4">Photos (Optional)</h2>
               <CustomFormField
                 name="photoUrls"
-                label="Property Photos"
+                label="Replace Property Photos"
                 type="file"
                 accept="image/*"
               />
@@ -214,7 +268,6 @@ const NewProperty = () => {
 
             <hr className="my-6 border-gray-200" />
 
-            {/* Additional Information */}
             <div className="space-y-6">
               <h2 className="text-lg font-semibold mb-4">
                 Additional Information
@@ -253,8 +306,9 @@ const NewProperty = () => {
             <Button
               type="submit"
               className="bg-primary-700 text-white w-full mt-8"
+              disabled={isUpdating}
             >
-              Create Property
+              {isUpdating ? "Saving Changes..." : "Save Changes"}
             </Button>
           </form>
         </Form>
@@ -263,4 +317,4 @@ const NewProperty = () => {
   );
 };
 
-export default NewProperty;
+export default EditProperty;

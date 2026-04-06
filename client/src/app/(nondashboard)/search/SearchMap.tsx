@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
@@ -12,23 +12,36 @@ interface SearchMapProps {
 }
 
 const SearchMap: React.FC<SearchMapProps> = ({ properties, center }) => {
-  const defaultIcon = useMemo(
-    () => {
-      // @ts-expect-error - L.icon exists but TypeScript doesn't recognize it
-      return L.icon({
-        iconUrl:
-          "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-        iconRetinaUrl:
-          "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-        shadowUrl:
-          "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41],
-      });
-    },
-    [],
+  const [isMapReady, setIsMapReady] = useState(false);
+
+  const defaultIcon = useMemo(() => {
+    // @ts-expect-error - L.icon exists but TypeScript doesn't recognize it
+    return L.icon({
+      iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+      iconRetinaUrl:
+        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+      shadowUrl:
+        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+    });
+  }, []);
+
+  const propertiesWithValidCoordinates = useMemo(
+    () =>
+      (properties || []).filter((property) => {
+        const lat = property.location?.coordinates?.latitude;
+        const lng = property.location?.coordinates?.longitude;
+        return (
+          typeof lat === "number" &&
+          typeof lng === "number" &&
+          Number.isFinite(lat) &&
+          Number.isFinite(lng)
+        );
+      }),
+    [properties],
   );
 
   return (
@@ -36,6 +49,7 @@ const SearchMap: React.FC<SearchMapProps> = ({ properties, center }) => {
       <MapContainer
         center={center}
         zoom={9}
+        whenReady={() => setIsMapReady(true)}
         className="map-container rounded-xl h-full w-full"
         style={{ height: "100%", width: "100%" }}
       >
@@ -43,13 +57,8 @@ const SearchMap: React.FC<SearchMapProps> = ({ properties, center }) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {properties
-          ?.filter(
-            (property) =>
-              property.location?.coordinates?.latitude !== undefined &&
-              property.location?.coordinates?.longitude !== undefined,
-          )
-          .map((property) => (
+        {isMapReady &&
+          propertiesWithValidCoordinates.map((property) => (
             <Marker
               key={property.id}
               position={[
@@ -58,24 +67,24 @@ const SearchMap: React.FC<SearchMapProps> = ({ properties, center }) => {
               ]}
               icon={defaultIcon}
             >
-            <Popup>
-              <div className="marker-popup">
-                <div className="marker-popup-image"></div>
-                <div>
-                  <a
-                    href={`/search/${property.id}`}
-                    target="_blank"
-                    className="marker-popup-title"
-                    rel="noreferrer"
-                  >
-                    {property.name}
-                  </a>
-                  <p className="marker-popup-price">
-                    ${property.pricePerMonth}
-                    <span className="marker-popup-price-unit"> / month</span>
-                  </p>
+              <Popup>
+                <div className="marker-popup">
+                  <div className="marker-popup-image"></div>
+                  <div>
+                    <a
+                      href={`/search/${property.id}`}
+                      target="_blank"
+                      className="marker-popup-title"
+                      rel="noreferrer"
+                    >
+                      {property.name}
+                    </a>
+                    <p className="marker-popup-price">
+                      ${property.pricePerMonth}
+                      <span className="marker-popup-price-unit"> / month</span>
+                    </p>
+                  </div>
                 </div>
-              </div>
               </Popup>
             </Marker>
           ))}

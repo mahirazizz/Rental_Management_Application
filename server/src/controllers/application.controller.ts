@@ -2,25 +2,92 @@ import { Request, Response } from "express";
 import { Prisma } from "@prisma/client";
 import prisma from "../db/index";
 
-const listApplications = async (req: Request, res: Response): Promise<void> => {
+type AuthenticatedRequest = Request & {
+  user?: Record<string, unknown>;
+};
+
+const extractPossibleCognitoIds = (
+  req: AuthenticatedRequest,
+  userIdFromQuery?: string,
+): string[] => {
+  const tokenUser = req.user ?? {};
+
+  const rawValues = [
+    userIdFromQuery,
+    tokenUser.sub,
+    tokenUser.username,
+    tokenUser["cognito:username"],
+    tokenUser.userId,
+  ];
+
+  return Array.from(
+    new Set(
+      rawValues.filter(
+        (value): value is string =>
+          typeof value === "string" && value.trim().length > 0,
+      ),
+    ),
+  );
+};
+
+const resolveUserRole = (
+  req: AuthenticatedRequest,
+  userTypeFromQuery?: string,
+): "manager" | "tenant" | null => {
+  const tokenUser = req.user ?? {};
+  const tokenRole =
+    (typeof tokenUser["custom:role"] === "string"
+      ? tokenUser["custom:role"]
+      : typeof tokenUser.role === "string"
+        ? tokenUser.role
+        : "")
+      .toLowerCase()
+      .trim();
+
+  if (tokenRole === "manager" || tokenRole === "tenant") {
+    return tokenRole;
+  }
+
+  const normalizedQueryRole = (userTypeFromQuery || "").toLowerCase().trim();
+  if (normalizedQueryRole === "manager" || normalizedQueryRole === "tenant") {
+    return normalizedQueryRole;
+  }
+
+  return null;
+};
+
+const listApplications = async (
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> => {
   try {
     const { userId, userType } = req.query;
 
-    let whereClause = {};
+    const resolvedRole = resolveUserRole(
+      req,
+      typeof userType === "string" ? userType : undefined,
+    );
+    const possibleUserIds = extractPossibleCognitoIds(
+      req,
+      typeof userId === "string" ? userId : undefined,
+    );
 
-    if (userId && userType) {
-      if (userType === "tenant") {
-        whereClause = {
-          tenantCognitoId: String(userId),
-        };
-      } else if (userType === "manager") {
-        whereClause = {
-          property: {
-            managerCognitoId: String(userId),
-          },
-        };
-      }
+    if (!resolvedRole || possibleUserIds.length === 0) {
+      res.status(400).json({
+        message:
+          "Unable to resolve user identity for application filtering. Please sign in again.",
+      });
+      return;
     }
+
+    const whereClause: Prisma.ApplicationWhereInput =
+      resolvedRole === "tenant"
+        ? {
+            tenantCognitoId: {
+              in: possibleUserIds,
+            },
+          }
+        : {};
 
     const applications = await prisma.application.findMany({
       where: whereClause,

@@ -89,6 +89,7 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
           <Textarea
             placeholder={placeholder}
             {...field}
+            value={field.value ?? ""}
             rows={3}
             className={`border-gray-200 p-4 ${inputClassName}`}
           />
@@ -196,6 +197,7 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
             type="number"
             placeholder={placeholder}
             {...field}
+            value={field.value ?? ""}
             className={`border-gray-200 p-4 ${inputClassName}`}
             disabled={disabled}
           />
@@ -215,6 +217,7 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
             type={type}
             placeholder={placeholder}
             {...field}
+            value={field.value ?? ""}
             className={`border-gray-200 p-4 ${inputClassName}`}
             disabled={disabled}
           />

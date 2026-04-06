@@ -62,6 +62,16 @@ const PropertyTenants = () => {
         subtitle="Manage tenants and leases for this property"
       />
 
+      <div className="mb-4">
+        <Link
+          href={`/managers/properties/${propertyId}/edit`}
+          className="inline-flex items-center rounded-md bg-primary-700 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600"
+          scroll={false}
+        >
+          Edit Property
+        </Link>
+      </div>
+
       <div className="w-full space-y-6">
         <div className="mt-8 bg-white rounded-xl shadow-md overflow-hidden p-6">
           <div className="flex justify-between items-center mb-4">

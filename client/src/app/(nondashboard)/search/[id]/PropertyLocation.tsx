@@ -29,6 +29,24 @@ const PropertyLocation = ({ propertyId }: PropertyDetailsProps) => {
     return [34.05, -118.25];
   }, [property]);
 
+  const directionsUrl = useMemo(() => {
+    const lat = property?.location?.coordinates?.latitude;
+    const lng = property?.location?.coordinates?.longitude;
+
+    if (
+      typeof lat === "number" &&
+      typeof lng === "number" &&
+      Number.isFinite(lat) &&
+      Number.isFinite(lng)
+    ) {
+      return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    }
+
+    return `https://maps.google.com/?q=${encodeURIComponent(
+      property?.location?.address || "",
+    )}`;
+  }, [property]);
+
   if (isLoading) return <>Loading...</>;
   if (isError || !property) {
     return (
@@ -57,9 +75,7 @@ const PropertyLocation = ({ propertyId }: PropertyDetailsProps) => {
           </span>
         </div>
         <a
-          href={`https://maps.google.com/?q=${encodeURIComponent(
-            property.location?.address || "",
-          )}`}
+          href={directionsUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="flex justify-between items-center hover:underline gap-2 text-primary-600"

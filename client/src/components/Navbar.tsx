@@ -27,11 +27,13 @@ const Navbar = () => {
 
   const { data: applications } = useGetApplicationsQuery(
     {
-      userId: authUser?.cognitoInfo?.userId,
+      userId:
+        userRole === "tenant" ? authUser?.cognitoInfo?.userId : undefined,
       userType: userRole === "manager" ? "manager" : "tenant",
     },
     {
-      skip: !authUser?.cognitoInfo?.userId || !userRole,
+      skip:
+        !userRole || (userRole === "tenant" && !authUser?.cognitoInfo?.userId),
     },
   );
 

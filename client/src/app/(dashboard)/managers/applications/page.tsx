@@ -15,8 +15,9 @@ import Link from "next/link";
 import React, { useState } from "react";
 
 const Applications = () => {
-  const { data: authUser } = useGetAuthUserQuery();
+  const { data: authUser, isLoading: authLoading } = useGetAuthUserQuery();
   const [activeTab, setActiveTab] = useState("all");
+  const isManager = authUser?.userRole?.toLowerCase() === "manager";
 
   const {
     data: applications,
@@ -24,11 +25,10 @@ const Applications = () => {
     isError,
   } = useGetApplicationsQuery(
     {
-      userId: authUser?.cognitoInfo?.userId,
       userType: "manager",
     },
     {
-      skip: !authUser?.cognitoInfo?.userId,
+      skip: !isManager,
     },
   );
   const [updateApplicationStatus] = useUpdateApplicationStatusMutation();
@@ -37,10 +37,15 @@ const Applications = () => {
     await updateApplicationStatus({ id, status });
   };
 
-  if (isLoading) return <Loading />;
-  if (isError || !applications) return <div>Error fetching applications</div>;
+  if (authLoading || isLoading) return <Loading />;
+  if (!isManager) {
+    return <div className="dashboard-container">Manager account not found.</div>;
+  }
+  if (isError) return <div>Error fetching applications</div>;
 
-  const filteredApplications = applications?.filter((application) => {
+  const safeApplications = applications ?? [];
+
+  const filteredApplications = safeApplications.filter((application) => {
     if (activeTab === "all") return true;
     return application.status.toLowerCase() === activeTab;
   });
@@ -87,7 +92,7 @@ const Applications = () => {
                       }`}
                     >
                       <div className="flex flex-wrap items-center">
-                        <File className="w-5 h-5 mr-2 flex-shrink-0" />
+                        <File className="w-5 h-5 mr-2 shrink-0" />
                         <span className="mr-2">
                           Application submitted on{" "}
                           {new Date(
@@ -95,7 +100,7 @@ const Applications = () => {
                           ).toLocaleDateString()}
                           .
                         </span>
-                        <CircleCheckBig className="w-5 h-5 mr-2 flex-shrink-0" />
+                        <CircleCheckBig className="w-5 h-5 mr-2 shrink-0" />
                         <span
                           className={`font-semibold ${
                             application.status === "Approved"

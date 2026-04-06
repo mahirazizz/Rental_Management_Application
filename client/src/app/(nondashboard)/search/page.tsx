@@ -19,8 +19,6 @@ const SearchPage = () => {
   );
 
   useEffect(() => {
-    console.log("[SearchPage] useEffect triggered, searchParams:", searchParams.toString());
-    
     const filterKeys: Array<keyof FiltersState> = [
       "location",
       "beds",
@@ -35,11 +33,9 @@ const SearchPage = () => {
 
     // Check if there are ANY search params at all
     const hasSearchParams = searchParams.toString().length > 0;
-    console.log("[SearchPage] hasSearchParams:", hasSearchParams);
 
     if (!hasSearchParams) {
       // No search params - reset to defaults to show ALL properties
-      console.log("[SearchPage] No search params, showing all properties");
       dispatch(
         setFilters({
           location: "",
@@ -60,8 +56,6 @@ const SearchPage = () => {
     const initialFilters = Array.from(searchParams.entries()).reduce<
       Partial<FiltersState>
     >((acc, [key, value]) => {
-      console.log("[SearchPage] Parsing URL param:", key, "=", value);
-      
       if (!filterKeys.includes(key as keyof FiltersState)) {
         return acc;
       }
@@ -97,23 +91,22 @@ const SearchPage = () => {
       return acc;
     }, {});
 
-    console.log("[SearchPage] Dispatching filters from URL:", initialFilters);
     dispatch(setFilters(initialFilters));
   }, [searchParams, dispatch]);
 
   return (
     <div
-      className="w-full mx-auto px-5 flex flex-col"
+      className="w-full mx-auto px-4 sm:px-5 flex flex-col bg-linear-to-b from-slate-100 via-white to-slate-100"
       style={{
         height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
       }}
     >
       <FiltersBar />
-      <div className="flex justify-between flex-1 overflow-hidden gap-3 mb-5">
+      <div className="flex justify-between flex-1 overflow-hidden gap-3 pb-4">
         <div
-          className={`h-full overflow-auto transition-all duration-300 ease-in-out ${
+          className={`h-full overflow-auto rounded-2xl border border-slate-200 bg-white/85 shadow-sm transition-all duration-300 ease-in-out ${
             isFiltersFullOpen
-              ? "w-3/12 opacity-100 visible"
+              ? "w-3/12 min-w-70 opacity-100 visible"
               : "w-0 opacity-0 invisible"
           }`}
         >

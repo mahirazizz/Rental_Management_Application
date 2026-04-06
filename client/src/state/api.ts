@@ -88,7 +88,10 @@ export const api = createApi({
     // property related endpoints
     getProperties: build.query<
       Property[],
-      Partial<FiltersState> & { favoriteIds?: number[]; managerCognitoId?: string }
+      Partial<FiltersState> & {
+        favoriteIds?: number[];
+        managerCognitoId?: string;
+      }
     >({
       query: (filters) => {
         console.log("[RTK Query] getProperties called with filters:", filters);
@@ -110,17 +113,29 @@ export const api = createApi({
             ? filters.favoriteIds.join(",")
             : undefined,
           managerCognitoId: filters.managerCognitoId,
-          latitude: filters.coordinates?.[1],
-          longitude: filters.coordinates?.[0],
+          latitude:
+            filters.coordinates?.length === 2 &&
+            (filters.coordinates[0] !== 0 || filters.coordinates[1] !== 0)
+              ? filters.coordinates[1]
+              : undefined,
+          longitude:
+            filters.coordinates?.length === 2 &&
+            (filters.coordinates[0] !== 0 || filters.coordinates[1] !== 0)
+              ? filters.coordinates[0]
+              : undefined,
         });
 
-        console.log("[RTK Query] After cleanParams, sending params:", params);
-        console.log(
-          "[RTK Query] API URL: /properties?",
-          new URLSearchParams(params as Record<string, string>).toString(),
-        );
+        const searchParams = new URLSearchParams();
+        Object.entries(params).forEach(([key, value]) => {
+          if (value === undefined || value === null) return;
+          searchParams.append(key, String(value));
+        });
+        const queryString = searchParams.toString();
 
-        return { url: "properties", params };
+        console.log("[RTK Query] After cleanParams, sending params:", params);
+        console.log("[RTK Query] API URL: /properties?", queryString);
+
+        return queryString ? `properties?${queryString}` : "properties";
       },
       providesTags: (result) =>
         result
@@ -181,7 +196,10 @@ export const api = createApi({
       },
     }),
 
-    deleteTenantAccount: build.mutation<{ message: string }, { cognitoId: string }>({
+    deleteTenantAccount: build.mutation<
+      { message: string },
+      { cognitoId: string }
+    >({
       query: ({ cognitoId }) => ({
         url: `tenants/${cognitoId}`,
         method: "DELETE",
@@ -339,6 +357,41 @@ export const api = createApi({
       },
     }),
 
+    updateProperty: build.mutation<
+      Property,
+      { id: number; propertyData: FormData }
+    >({
+      query: ({ id, propertyData }) => ({
+        url: `properties/${id}`,
+        method: "PUT",
+        body: propertyData,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        {
+          type: "PropertyDetails",
+          id,
+        },
+        {
+          type: "Properties",
+          id,
+        },
+        {
+          type: "Properties",
+          id: "LIST",
+        },
+        {
+          type: "Managers",
+          id: result?.manager?.id,
+        },
+      ],
+      async onQueryStarted(_, { queryFulfilled }) {
+        await withToast(queryFulfilled, {
+          success: "Property updated successfully!",
+          error: "Failed to update property.",
+        });
+      },
+    }),
+
     // lease related enpoints
     getLeases: build.query<Lease[], number>({
       query: () => "leases",
@@ -446,6 +499,7 @@ export const {
   useGetCurrentResidencesQuery,
   useGetManagerPropertiesQuery,
   useCreatePropertyMutation,
+  useUpdatePropertyMutation,
   useGetTenantQuery,
   useAddFavoritePropertyMutation,
   useRemoveFavoritePropertyMutation,

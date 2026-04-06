@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { PropertyTypeEnum } from "@/lib/constants";
 
-export const propertySchema = z.object({
+const propertySchemaBase = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
   pricePerMonth: z.coerce.number().positive().min(0).int(),
@@ -9,9 +9,7 @@ export const propertySchema = z.object({
   applicationFee: z.coerce.number().positive().min(0).int(),
   isPetsAllowed: z.boolean(),
   isParkingIncluded: z.boolean(),
-  photoUrls: z
-    .array(z.instanceof(File))
-    .min(1, "At least one photo is required"),
+  photoUrls: z.array(z.instanceof(File)),
   amenities: z.string().min(1, "Amenities are required"),
   highlights: z.string().min(1, "Highlights are required"),
   beds: z.coerce.number().positive().min(0).max(10).int(),
@@ -23,9 +21,42 @@ export const propertySchema = z.object({
   state: z.string().min(1, "State is required"),
   country: z.string().min(1, "Country is required"),
   postalCode: z.string().min(1, "Postal code is required"),
+  latitude: z.coerce.number().min(-90).max(90).optional(),
+  longitude: z.coerce.number().min(-180).max(180).optional(),
 });
 
+const withCoordinateRefinement = <T extends z.ZodTypeAny>(schema: T) =>
+  schema.refine(
+    (data) => {
+      const value = data as { latitude?: number; longitude?: number };
+      const hasLatitude = value.latitude !== undefined;
+      const hasLongitude = value.longitude !== undefined;
+      return (hasLatitude && hasLongitude) || (!hasLatitude && !hasLongitude);
+    },
+    {
+      message: "Provide both latitude and longitude together",
+      path: ["latitude"],
+    },
+  );
+
+export const propertySchema = withCoordinateRefinement(
+  propertySchemaBase.extend({
+    photoUrls: propertySchemaBase.shape.photoUrls.min(
+      1,
+      "At least one photo is required",
+    ),
+  }),
+);
+
 export type PropertyFormData = z.infer<typeof propertySchema>;
+
+export const propertyEditSchema = withCoordinateRefinement(
+  propertySchemaBase.extend({
+    photoUrls: propertySchemaBase.shape.photoUrls.optional(),
+  }),
+);
+
+export type PropertyEditFormData = z.infer<typeof propertyEditSchema>;
 
 export const applicationSchema = z.object({
   name: z.string().min(1, "Name is required"),
