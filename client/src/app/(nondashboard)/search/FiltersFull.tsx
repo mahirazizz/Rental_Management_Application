@@ -155,7 +155,7 @@ const FiltersFull = () => {
               localFilters.priceRange[0] ?? 0,
               localFilters.priceRange[1] ?? 10000,
             ]}
-            onValueChange={(value: any) =>
+            onValueChange={(value: number[]) =>
               setLocalFilters((prev) => ({
                 ...prev,
                 priceRange: value as [number, number],

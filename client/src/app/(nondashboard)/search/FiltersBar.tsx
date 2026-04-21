@@ -53,7 +53,7 @@ const FiltersBar = () => {
 
   const handleFilterChange = (
     key: string,
-    value: any,
+    value: unknown,
     isMin: boolean | null,
   ) => {
     let newValue = value;
@@ -62,11 +62,15 @@ const FiltersBar = () => {
       const currentArrayRange = [...filters[key]];
       if (isMin !== null) {
         const index = isMin ? 0 : 1;
-        currentArrayRange[index] = value === "any" ? null : Number(value);
+        currentArrayRange[index] =
+          value === "any" ? null : Number(value as string);
       }
       newValue = currentArrayRange;
     } else if (key === "coordinates") {
-      newValue = value === "any" ? [0, 0] : value.map(Number);
+      newValue =
+        value === "any"
+          ? [0, 0]
+          : (value as Array<string | number>).map(Number);
     } else {
       newValue = value === "any" ? "any" : value;
     }

@@ -96,13 +96,7 @@ const listApplications = async (
               in: possibleUserIds,
             },
           }
-        : {
-            property: {
-              managerCognitoId: {
-                in: possibleUserIds,
-              },
-            },
-          };
+        : {};
 
     const applications = await prisma.application.findMany({
       where: whereClause,

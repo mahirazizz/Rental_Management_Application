@@ -1,9 +1,9 @@
 // Suppress TypeScript errors for leaflet and react-leaflet
 declare module "leaflet" {
   export * from "leaflet";
-  
+
   export namespace L {
-    function icon(options: any): any;
+    function icon(options: Record<string, unknown>): unknown;
   }
 }
 
@@ -14,25 +14,25 @@ declare module "react-leaflet" {
     className?: string;
     scrollWheelZoom?: boolean;
     children?: React.ReactNode;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   export interface TileLayerProps {
     attribution?: string;
     url?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   export interface MarkerProps {
     position?: [number, number];
-    icon?: any;
+    icon?: unknown;
     children?: React.ReactNode;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   export interface PopupProps {
     children?: React.ReactNode;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   export const MapContainer: React.ComponentType<MapContainerProps>;

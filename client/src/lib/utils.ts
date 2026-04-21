@@ -20,19 +20,22 @@ export function formatPriceValue(value: number | null, isMin: boolean) {
   return isMin ? `$${value}+` : `<$${value}`;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function cleanParams(params: Record<string, any>): Record<string, any> {
+export function cleanParams<T extends object>(params: T): Partial<T> {
+  const entries = Object.entries(params) as Array<[keyof T, T[keyof T]]>;
+
   return Object.fromEntries(
-    Object.entries(params).filter(
+    entries.filter(
       (
         [_, value], // eslint-disable-line @typescript-eslint/no-unused-vars
       ) =>
         value !== undefined &&
         value !== "any" &&
         value !== "" &&
-        (Array.isArray(value) ? value.some((v) => v !== null) : value !== null),
+        (Array.isArray(value)
+          ? value.some((v) => v !== null)
+          : value !== null),
     ),
-  );
+  ) as Partial<T>;
 }
 
 type MutationMessages = {
@@ -151,27 +154,49 @@ export const withToast = async <T>(
     const result = await mutationFn;
     if (success) toast.success(success);
     return result;
-  } catch (error: any) {
+  } catch (error: unknown) {
     let errorMessage = "An error occurred";
+    const err =
+      typeof error === "object" && error !== null
+        ? (error as Record<string, unknown>)
+        : undefined;
+    const nestedError =
+      err && typeof err.error === "object" && err.error !== null
+        ? (err.error as Record<string, unknown>)
+        : undefined;
+    const nestedData =
+      nestedError &&
+      typeof nestedError.data === "object" &&
+      nestedError.data !== null
+        ? (nestedError.data as Record<string, unknown>)
+        : undefined;
+    const data =
+      err && typeof err.data === "object" && err.data !== null
+        ? (err.data as Record<string, unknown>)
+        : undefined;
 
     // RTK Query error structure: { error: { data: { message: "..." }, status: 500 }, ... }
-    if (error?.error?.data?.message) {
-      errorMessage = error.error.data.message;
+    if (typeof nestedData?.message === "string" && nestedData.message) {
+      errorMessage = nestedData.message;
     }
     // Alternative structure: { status: number, data: { message: "..." } }
-    else if (error?.data?.message) {
-      errorMessage = error.data.message;
+    else if (typeof data?.message === "string" && data.message) {
+      errorMessage = data.message;
     }
     // String response
-    else if (typeof error?.data === "string") {
-      errorMessage = error.data;
+    else if (typeof err?.data === "string") {
+      errorMessage = err.data;
     }
     // Direct message property
-    else if (error?.message) {
-      errorMessage = error.message;
+    else if (typeof err?.message === "string" && err.message) {
+      errorMessage = err.message;
+    }
+    // Structured extraction fallback
+    else {
+      errorMessage = extractErrorMessage(error);
     }
     // Fallback to provided error message
-    else if (messages.error) {
+    if (messages.error) {
       errorMessage = messages.error;
     }
 
@@ -180,13 +205,16 @@ export const withToast = async <T>(
   }
 };
 
-export const createNewUserInDatabase = async (
+export const createNewUserInDatabase = async <T>(
   user: Record<string, unknown>,
   idToken: Record<string, unknown> | string,
   userRole: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  fetchWithBQ: any,
-) => {
+  fetchWithBQ: (args: {
+    url: string;
+    method: "POST";
+    body: Record<string, unknown>;
+  }) => T | PromiseLike<T>,
+): Promise<Awaited<T>> => {
   const createEndpoint =
     userRole?.toLowerCase() === "manager" ? "/managers" : "/tenants";
 
