@@ -31,9 +31,7 @@ export function cleanParams<T extends object>(params: T): Partial<T> {
         value !== undefined &&
         value !== "any" &&
         value !== "" &&
-        (Array.isArray(value)
-          ? value.some((v) => v !== null)
-          : value !== null),
+        (Array.isArray(value) ? value.some((v) => v !== null) : value !== null),
     ),
   ) as Partial<T>;
 }

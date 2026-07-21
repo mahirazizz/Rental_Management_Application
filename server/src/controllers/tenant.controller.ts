@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Prisma } from "@prisma/client";
 import prisma from "../db/index";
 import { wktToGeoJSON } from "@terraformer/wkt";
 
@@ -84,7 +85,7 @@ const deleteTenant = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       if (tenant.favorites.length > 0) {
         await tx.tenant.update({
           where: { cognitoId },
@@ -103,9 +104,11 @@ const deleteTenant = async (req: Request, res: Response): Promise<void> => {
           where: { cognitoId },
           data: {
             properties: {
-              disconnect: tenant.properties.map((property) => ({
-                id: property.id,
-              })),
+              disconnect: tenant.properties.map(
+                (property: (typeof tenant.properties)[number]) => ({
+                  id: property.id,
+                }),
+              ),
             },
           },
         });

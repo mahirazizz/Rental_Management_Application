@@ -40,7 +40,9 @@ const Applications = () => {
 
   if (authLoading || isLoading) return <Loading />;
   if (!isManager) {
-    return <div className="dashboard-container">Manager account not found.</div>;
+    return (
+      <div className="dashboard-container">Manager account not found.</div>
+    );
   }
   if (isError) return <div>Error fetching applications</div>;
 

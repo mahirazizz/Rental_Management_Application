@@ -27,10 +27,12 @@ const EditProperty = () => {
   const propertyId = Number(id);
 
   const { data: authUser } = useGetAuthUserQuery();
-  const { data: property, isLoading: propertyLoading } =
-    useGetPropertyQuery(propertyId, {
+  const { data: property, isLoading: propertyLoading } = useGetPropertyQuery(
+    propertyId,
+    {
       skip: Number.isNaN(propertyId),
-    });
+    },
+  );
   const [updateProperty, { isLoading: isUpdating }] =
     useUpdatePropertyMutation();
 

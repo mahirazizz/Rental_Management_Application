@@ -63,9 +63,7 @@ const PropertyLocation = ({ propertyId }: PropertyDetailsProps) => {
 
   return (
     <div className="py-16">
-      <h3 className="text-xl font-semibold my-3">
-        Map and Location
-      </h3>
+      <h3 className="text-xl font-semibold my-3">Map and Location</h3>
       <div className="flex justify-between items-center text-sm text-primary-500 mt-2">
         <div className="flex items-center text-gray-500">
           <MapPin className="w-4 h-4 mr-1 text-gray-700" />
